@@ -1,5 +1,4 @@
-import { Meta } from "@storybook/react";
-import type { StoryObj } from "@storybook/react";
+import type { StoryObj, Meta } from "@storybook/react";
 
 import { Input, SignalForm } from "~/index";
 import { createRemixStoryDecorator } from "./utils/decorators";

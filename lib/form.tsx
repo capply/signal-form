@@ -1,4 +1,3 @@
-/* eslint-disable prefer-let/prefer-let */
 import { Form, useActionData } from "@remix-run/react";
 import type { FormProps } from "@remix-run/react";
 import type { FormEventHandler, ReactNode } from "react";
