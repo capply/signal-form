@@ -1,4 +1,11 @@
 {
+  "include": [
+    "remix.env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".*/**/*.ts",
+    ".*/**/*.tsx"
+  ],
   "compilerOptions": {
     "target": "ESNext",
     "useDefineForClassFields": true,
@@ -15,6 +22,9 @@
     "isolatedModules": true,
     "noUncheckedIndexedAccess": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "paths": {
+      "~/*": ["./lib/*"]
+    }
   }
 }

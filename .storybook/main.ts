@@ -1,3 +1,7 @@
+import { mergeConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
+import type { StorybookConfig } from "@storybook/react-vite";
+
 export default {
   stories: ["../stories/**/*.mdx", "../stories/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
@@ -12,4 +16,12 @@ export default {
   docs: {
     autodocs: "tag",
   },
-};
+  async viteFinal(config) {
+    return mergeConfig(config, {
+      plugins: [tsconfigPaths()],
+      define: {
+        "process.env": {},
+      },
+    });
+  },
+} satisfies StorybookConfig;
