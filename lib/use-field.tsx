@@ -1,4 +1,3 @@
-/* eslint-disable prefer-let/prefer-let */
 import { useContext, useMemo } from "react";
 import { signal as createSignal, computed } from "@preact/signals-react";
 import type { ReadonlySignal } from "@preact/signals-react";

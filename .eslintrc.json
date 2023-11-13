@@ -1,17 +1,26 @@
 {
-  "extends": "@frontside",
+  "parser": "@typescript-eslint/parser",
+  "extends": ["plugin:@typescript-eslint/recommended"],
+  "plugins": ["@typescript-eslint"],
   "rules": {
-    "eol-last": "off",
+    "@typescript-eslint/consistent-type-imports": "error",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-use-before-define": "off",
+    "arrow-spacing": "error",
+    "eol-last": "error",
+    "no-empty-function": "off",
+    "no-multi-spaces": "error",
+    "no-trailing-spaces": "error",
+    "object-curly-spacing": ["error", "always"],
+    "one-var": ["error", { "initialized": "never" }],
+    "prefer-const": "off",
+    "semi": ["error", "always", { "omitLastInOneLineBlock": true }],
     "@typescript-eslint/no-extra-semi": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/consistent-type-imports": "warn",
-    "no-multi-spaces": "off",
-    "no-trailing-spaces": "off",
-    "object-curly-spacing": "off",
-    "semi": "off",
-    "no-console": "warn",
-    "prefer-let/prefer-let": "off"
+    "no-console": "warn"
   },
   "ignorePatterns": ["playground"]
 }
