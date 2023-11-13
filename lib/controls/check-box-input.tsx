@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import type { InputHTMLAttributes } from "react";
 import { useField } from "~/use-field";
 
-type CheckBoxInputProps = Omit<
+export type CheckBoxInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
   "type"
 > & {

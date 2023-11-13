@@ -1,4 +1,4 @@
-import { Button } from "../lib";
+import { SignalForm } from "../lib";
 import "./App.css";
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
       <h2>Presents</h2>
       <h1>Vite + React</h1>
       <div className="card">
-        <Button size="medium" type="primary" />
+        <SignalForm></SignalForm>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>

@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import type { SelectHTMLAttributes } from "react";
 import { useField } from "~/use-field";
 
-type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
+export type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
   name: string;
 };
 

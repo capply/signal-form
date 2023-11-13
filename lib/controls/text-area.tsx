@@ -2,11 +2,11 @@ import { forwardRef } from "react";
 import type { TextareaHTMLAttributes } from "react";
 import { useField } from "~/use-field";
 
-type InputProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
+export type TextAreaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   name: string;
 };
 
-export const TextArea = forwardRef<HTMLTextAreaElement, InputProps>(
+export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ name, onChange, ...props }, ref) => {
     let field = useField<string>(name);
 

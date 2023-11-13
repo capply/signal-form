@@ -2,25 +2,31 @@ import { forwardRef } from "react";
 import type { InputHTMLAttributes } from "react";
 import { useField } from "~/use-field";
 
-export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
+export type RadioInputProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "type"
+> & {
   name: string;
+  value: string;
 };
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ name, onChange, ...props }, ref) => {
+export const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(
+  ({ name, value, onChange, ...props }, ref) => {
     let field = useField<string>(name);
 
     return (
       <input
+        type="radio"
         ref={ref}
         {...props}
         name={field.name}
-        value={field.value.value || ""}
+        checked={field.value.value?.toString() === value.toString()}
         onChange={(e) => {
           onChange?.(e);
-          field.setValue(e.target.value);
+          field.setValue(value);
           field.setTouched();
         }}
+        value={value}
       />
     );
   }

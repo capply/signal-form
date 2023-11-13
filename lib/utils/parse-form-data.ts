@@ -1,6 +1,6 @@
 type ParsedObject = { [key: string]: any };
 
-export function parseFormData(formData: FormData) {
+export function parseFormData(formData: FormData): ParsedObject {
   let result: ParsedObject = {};
 
   // Iterate over each form data entry
