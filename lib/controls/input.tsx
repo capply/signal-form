@@ -9,14 +9,14 @@ export type InputProps = InputHTMLAttributes<HTMLInputElement> & {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ name, onChange, ...props }, ref) => {
-    let field = useField<string>(name);
+    let field = useField<string>(name, { defaultValue: "" });
 
     return (
       <input
         ref={ref}
         {...props}
         name={field.name}
-        value={field.data.value || ""}
+        value={field.data as any}
         onChange={(e) => {
           onChange?.(e);
           batch(() => {

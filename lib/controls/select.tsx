@@ -9,14 +9,14 @@ export type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ name, onChange, ...props }, ref) => {
-    let field = useField<string>(name);
+    let field = useField<string>(name, { defaultValue: "" });
 
     return (
       <select
         ref={ref}
         {...props}
         name={field.name}
-        value={field.data.value || ""}
+        value={field.data.value}
         onChange={(e) => {
           onChange?.(e);
           batch(() => {

@@ -1,3 +1,7 @@
+export { AddButton } from "./controls/add-button";
+export type { AddButtonProps } from "./controls/add-button";
+export { RemoveButton } from "./controls/remove-button";
+export type { RemoveButtonProps } from "./controls/remove-button";
 export { Input } from "./controls/input";
 export type { InputProps } from "./controls/input";
 export { CheckBoxInput } from "./controls/check-box-input";

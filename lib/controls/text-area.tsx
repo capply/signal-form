@@ -9,14 +9,14 @@ export type TextAreaProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ name, onChange, ...props }, ref) => {
-    let field = useField<string>(name);
+    let field = useField<string>(name, { defaultValue: "" });
 
     return (
       <textarea
         ref={ref}
         {...props}
         name={field.name}
-        value={field.data.value || ""}
+        value={field.data as any}
         onChange={(e) => {
           onChange?.(e);
           batch(() => {

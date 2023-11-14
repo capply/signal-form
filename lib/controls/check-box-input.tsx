@@ -12,7 +12,7 @@ export type CheckBoxInputProps = Omit<
 
 export const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
   ({ name, onChange, ...props }, ref) => {
-    let field = useField<boolean>(name);
+    let field = useField<boolean>(name, { defaultValue: false });
 
     return (
       <>
@@ -21,7 +21,7 @@ export const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
           ref={ref}
           {...props}
           name={field.name}
-          checked={field.data.value || false}
+          checked={field.data.value}
           onChange={(e) => {
             onChange?.(e);
             batch(() => {

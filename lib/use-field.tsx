@@ -46,7 +46,7 @@ export function useField<T>(
       return {
         name: fullPath,
         data: computed(
-          () => fieldContext.data.value[fieldName] || options.defaultValue
+          () => fieldContext.data.value[fieldName] ?? options.defaultValue
         ),
         errors,
         touched,
