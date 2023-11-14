@@ -23,13 +23,13 @@ type DeepPartial<T> = {
 export type SignalFormProps<S extends AnyObjectSchema> = {
   children?: ReactNode;
   schema?: S;
-  defaultValues?: DeepPartial<InferType<S>>;
+  defaultData?: DeepPartial<InferType<S>>;
 } & FormProps;
 
 export function SignalForm<S extends AnyObjectSchema>({
   children,
   schema,
-  defaultValues,
+  defaultData,
   id,
   onSubmit,
   ...props
@@ -40,9 +40,9 @@ export function SignalForm<S extends AnyObjectSchema>({
 
   let formContext: FormContext<S> = useMemo(() => {
     return createFormContext<S>({
-      submittedValues: actionData?.input,
+      submittedData: actionData?.input,
       submittedErrors: actionData?.errors,
-      defaultValues,
+      defaultData,
       schema,
       id: id || formId,
       onSubmit,
@@ -63,8 +63,8 @@ export function SignalForm<S extends AnyObjectSchema>({
 
 type CreateFormContextOptions<S extends AnyObjectSchema> = {
   submittedErrors?: ValidationError[];
-  submittedValues?: any;
-  defaultValues?: DeepPartial<InferType<S>>;
+  submittedData?: any;
+  defaultData?: DeepPartial<InferType<S>>;
   schema?: S;
   id: string;
   onSubmit?: FormEventHandler<HTMLFormElement>;
@@ -72,21 +72,21 @@ type CreateFormContextOptions<S extends AnyObjectSchema> = {
 
 function createFormContext<S extends AnyObjectSchema>({
   submittedErrors,
-  submittedValues,
-  defaultValues,
+  submittedData,
+  defaultData,
   schema,
   id,
   onSubmit,
 }: CreateFormContextOptions<S>): FormContext<S> {
   let result = signal(undefined);
-  let values = signal(submittedValues || defaultValues || {});
+  let data = signal(submittedData || defaultData || {});
   let errors = signal<ValidationError[]>(submittedErrors || []);
   let touched = signal({});
-  let didSubmit = signal(!!submittedValues);
+  let didSubmit = signal(!!submittedData);
 
   function validate(): ValidationResult<InferType<S>> {
     if (schema) {
-      let validationResult = validateSync(schema, values.value);
+      let validationResult = validateSync(schema, data.value);
       if (validationResult.ok) {
         errors.value = [];
         result.value = validationResult.data;
@@ -99,15 +99,15 @@ function createFormContext<S extends AnyObjectSchema>({
     } else {
       return {
         ok: true,
-        input: values.value,
+        input: data.value,
         status: "valid",
-        data: values.value,
+        data: data.value,
       };
     }
   }
 
   return {
-    values,
+    data,
     result,
     errors,
     touched,
@@ -131,7 +131,7 @@ function createFormContext<S extends AnyObjectSchema>({
       touched.value = { ...touched.value, [name]: true };
     },
     setValue(name, value) {
-      values.value = { ...values.value, [name]: value };
+      data.value = { ...data.value, [name]: value };
       validate();
     },
   };

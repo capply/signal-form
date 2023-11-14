@@ -72,28 +72,28 @@ export function FieldsArrayRowFor({
   let touched = useSignal({});
   let values = computed(
     () =>
-      (parentContext.values.value[name] &&
-        parentContext.values.value[name][index]) ||
+      (parentContext.data.value[name] &&
+        parentContext.data.value[name][index]) ||
       {}
   );
   let newContext: FieldsContext = {
     path: [parentContext.path, name].filter(Boolean).join(".") + `[${index}]`,
-    values,
+    data: values,
     touched: computed(() => touched.value),
     setTouched(subName) {
       touched.value = { ...touched.value, [subName]: true };
     },
     setValue(subName, value) {
-      let array = parentContext.values.value[name].slice() || [];
+      let array = parentContext.data.value[name].slice() || [];
       array[index] = { ...array[index], [subName]: value };
       parentContext.setValue(name, array);
     },
   };
   let row = {
     index,
-    length: computed(() => parentContext.values.value[name].length),
+    length: computed(() => parentContext.data.value[name].length),
     remove() {
-      let array = parentContext.values.value[name].slice() || [];
+      let array = parentContext.data.value[name].slice() || [];
       array.splice(index, 1);
       parentContext.setValue(name, array);
     },

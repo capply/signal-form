@@ -18,25 +18,25 @@ export function useFieldsArray<T = any>(fieldName: string): FieldArray<T> {
     return {
       ...field,
       keys: computed(() =>
-        (field.value.value || []).map((row, index) => (row as any)?.id || index)
+        (field.data.value || []).map((row, index) => (row as any)?.id || index)
       ),
       push(value: T) {
-        field.setValue([...(field.value.value || []), value]);
+        field.setData([...(field.data.value || []), value]);
       },
       insertAt(index, value) {
-        let newValues = field.value.value?.slice() || [];
+        let newValues = field.data.value?.slice() || [];
         newValues.splice(index, 0, value);
-        field.setValue(newValues);
+        field.setData(newValues);
       },
       updateAt(index, cb) {
-        let newValues = field.value.value?.slice() || [];
+        let newValues = field.data.value?.slice() || [];
         newValues.splice(index, 1, cb(newValues[index]));
-        field.setValue(newValues);
+        field.setData(newValues);
       },
       removeAt(index) {
-        let newValues = field.value.value?.slice() || [];
+        let newValues = field.data.value?.slice() || [];
         newValues.splice(index, 1);
-        field.setValue(newValues);
+        field.setData(newValues);
       },
     };
   }, [fieldName, field]);

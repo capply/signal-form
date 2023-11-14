@@ -1,3 +1,4 @@
+import { batch } from "@preact/signals-react";
 import { forwardRef } from "react";
 import type { InputHTMLAttributes } from "react";
 import { useField } from "~/use-field";
@@ -20,11 +21,13 @@ export const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(
         ref={ref}
         {...props}
         name={field.name}
-        checked={field.value.value?.toString() === value.toString()}
+        checked={field.data.value?.toString() === value.toString()}
         onChange={(e) => {
           onChange?.(e);
-          field.setValue(value);
-          field.setTouched();
+          batch(() => {
+            field.setData(value);
+            field.setTouched();
+          });
         }}
         value={value}
       />

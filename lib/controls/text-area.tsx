@@ -1,3 +1,4 @@
+import { batch } from "@preact/signals-react";
 import { forwardRef } from "react";
 import type { TextareaHTMLAttributes } from "react";
 import { useField } from "~/use-field";
@@ -15,11 +16,13 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         ref={ref}
         {...props}
         name={field.name}
-        value={field.value.value || ""}
+        value={field.data.value || ""}
         onChange={(e) => {
           onChange?.(e);
-          field.setValue(e.target.value);
-          field.setTouched();
+          batch(() => {
+            field.setData(e.target.value);
+            field.setTouched();
+          });
         }}
       />
     );

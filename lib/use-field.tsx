@@ -6,12 +6,12 @@ import type { ValidationError } from "~/utils/validate";
 
 export type Field<T> = {
   name: string;
-  value: ReadonlySignal<T | undefined>;
+  data: ReadonlySignal<T | undefined>;
   errors: ReadonlySignal<ValidationError[]>;
   touched: ReadonlySignal<boolean>;
   isValid: ReadonlySignal<boolean>;
   setTouched(): void;
-  setValue(value: T): void;
+  setData(value: T): void;
 };
 
 export type UseFieldOptions = {
@@ -45,8 +45,8 @@ export function useField<T>(
 
       return {
         name: fullPath,
-        value: computed(
-          () => fieldContext.values.value[fieldName] || options.defaultValue
+        data: computed(
+          () => fieldContext.data.value[fieldName] || options.defaultValue
         ),
         errors,
         touched,
@@ -54,7 +54,7 @@ export function useField<T>(
         setTouched() {
           fieldContext.setTouched(fieldName);
         },
-        setValue(value) {
+        setData(value) {
           fieldContext.setValue(fieldName, value);
         },
       };
@@ -63,14 +63,14 @@ export function useField<T>(
       let touchedSignal = createSignal(false);
       return {
         name: fieldName,
-        value: computed(() => fieldSignal.value),
+        data: computed(() => fieldSignal.value),
         errors: computed(() => []),
         touched: computed(() => touchedSignal.value),
         isValid: computed(() => true),
         setTouched() {
           touchedSignal.value = true;
         },
-        setValue(value) {
+        setData(value) {
           fieldSignal.value = value;
         },
       };

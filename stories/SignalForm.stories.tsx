@@ -14,7 +14,7 @@ const meta = {
     return (
       <SignalForm>
         <Input name="name" />
-        <p style={{ color: "white" }}>{name.value.value}</p>
+        <p style={{ color: "white" }}>{name.data.value}</p>
       </SignalForm>
     );
   },

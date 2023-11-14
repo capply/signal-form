@@ -211,10 +211,10 @@ export function TextField({ name, label }: TextFieldProps): JSX.Element {
       <label htmlFor={fieldId}>{label}</label>
       <input
         name={field.name}
-        value={field.value.value}
+        value={field.data.value}
         onChange={(e) => {
           field.setTouched();
-          field.setValue(e.target.value);
+          field.setData(e.target.value);
         }}
       />
       {field.errors.value.map((error, index) => (
@@ -234,5 +234,3 @@ please review this excellent blog post by the Preact team. To access the value
 of these signals we need to access the `.value` property on them, this also
 subscribes our `TextField` component to any changes to these signals, and it
 will rerender if their values change.
-
-If you're familiar with signals,

@@ -1,3 +1,4 @@
+import { batch } from "@preact/signals-react";
 import { forwardRef } from "react";
 import type { InputHTMLAttributes } from "react";
 import { useField } from "~/use-field";
@@ -20,11 +21,13 @@ export const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
           ref={ref}
           {...props}
           name={field.name}
-          checked={field.value.value || false}
+          checked={field.data.value || false}
           onChange={(e) => {
             onChange?.(e);
-            field.setValue(e.target.checked);
-            field.setTouched();
+            batch(() => {
+              field.setData(e.target.checked);
+              field.setTouched();
+            });
           }}
           value="true"
         />

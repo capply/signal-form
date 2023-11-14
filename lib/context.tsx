@@ -7,7 +7,7 @@ import type { AnyObjectSchema, InferType } from "yup";
 export type Touched = Record<string, boolean>;
 export type FieldsContext = {
   path?: string;
-  values: ReadonlySignal<Record<string, any>>;
+  data: ReadonlySignal<Record<string, any>>;
   touched: ReadonlySignal<Touched>;
   setTouched(name: string): void;
   setValue(name: string, value: any): void;
