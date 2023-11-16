@@ -192,8 +192,8 @@ The reason this is preferable to using the `input` element directly is for
 performance. By using the `Input` helper, the whole field does not need to be
 rerendered when the value of the field changes.
 
-But to understand signal-form a bit better, let's look at how we would build
-this same field component using the `useField` hook:
+But to understand signal-form a bit better, let's look at how we could build
+a simplified version of the same field component using the `useField` hook:
 
 ```tsx
 import { useField } from "signal-form";
@@ -213,7 +213,6 @@ export function TextField({ name, label }: TextFieldProps): JSX.Element {
         name={field.name}
         value={field.data.value}
         onChange={(e) => {
-          field.setTouched();
           field.setData(e.target.value);
         }}
       />
@@ -229,8 +228,176 @@ Let's unpack this a bit. The `useField` hook returns an object which allows you
 to both read and write data, as well as get access to the error messages of the
 field, if it has a schema.
 
-Both `value` and `errors` are signals. If you don't know what a signal is,
+Both `data` and `errors` are signals. If you don't know what a signal is,
 please review this excellent blog post by the Preact team. To access the value
 of these signals we need to access the `.value` property on them, this also
 subscribes our `TextField` component to any changes to these signals, and it
 will rerender if their values change.
+
+## Form context
+
+If you're used to working with signals, you might be confused by the fact that
+we need to call `setData` rather than writing to the value to the `data` signal
+directly. This is because all state of the form is actually stored in the form
+context, and `data` is a computed signal which derives its data from the form
+context. Let's look at accessing the form context directly:
+
+```tsx
+import { useFormContext } from "signal-form";
+
+export function FormData(): JSX.Element {
+  let context = useFormContext(name);
+  return <pre>{JSON.stringify(context.data.value, null, 2)}</pre>;
+}
+```
+
+This simple component will print out all data that is stored in the form.
+
+Since the `data` attribute of the form context is a signal, accessing `.value`
+on it both gets the current form data, but also subscribes the component to
+rerender if any of the data changes.
+
+## Dynamic forms
+
+Let's look at how we can use the form context to combine the first and last name to dynamically print the full name:
+
+```tsx
+import { SignalForm, useFormContext } from "signal-form";
+import { TextField } from "./text-field" // our text field implementation from earlier
+
+function FullName(): JSX.Element {
+    let context = useFormContext();
+
+    let { firstName, lastName = } = context.data.value;
+    let fullName = [firstName, lastName].filter(Boolean).join(" ");
+
+    return <p>Full name: {fullName}</p>;
+}
+
+export function UserForm(): JSX.Element {
+  return (
+    <SignalForm>
+        <TextField name="firstName" label="First name"/>
+        <TextField name="lastName" label="Last name"/>
+        <FullName/>
+    </SignalForm>
+  );
+}
+```
+
+Here we're using the `useFormContext` hook to grab the form context and extract
+the first and last names from it, we then combine them into the full name and
+print them out.
+
+This implementation works great, but it is not optimal from a performance
+perspective. _Any_ change to the form will cause the `FullName` component to
+rerender, even if the `firstName` and `lastName` fields are unchanged. Right now
+our form is small, so it probably doesn't matter. But as we build more
+complicated forms, we probably want to be a bit more conservative. Thankfully we
+can use the power of signals to improve the render performance of this component
+a lot!
+
+```tsx
+import { useComputed } from "@preact/signals-react";
+
+function FullName(): JSX.Element {
+    let context = useFormContext();
+
+    let fullName = useComputed(() => {
+        let { firstName, lastName = } = context.data.value;
+        return [firstName, lastName].filter(Boolean).join(" ");
+    });
+
+    return <p>Full name: {fullName}</p>;
+}
+```
+
+First we're creating a computed signal using the `useComputed` hook. When we
+render the signal like this into a text node directly, the value of the text
+node is bound to the signal directly. In fact this component never re-renders,
+even when the first and last name are changed!
+
+## Fields context
+
+Form context always gives us the full data of the entire form. But what if we
+used the `FieldsFor` helper to create a nested object. If we used form context
+here, we would have to reach into the `author` object to make this work:
+
+```tsx
+import { SignalForm, useFormContext } from "signal-form";
+import { TextField } from "./text-field" // our text field implementation from earlier
+
+function FullName(): JSX.Element {
+    let context = useFormContext();
+
+    let { firstName, lastName = } = context.data.value?.author;
+    let fullName = [firstName, lastName].filter(Boolean).join(" ");
+
+    return <p>Full name: {fullName}</p>;
+}
+
+export function UserForm(): JSX.Element {
+  return (
+    <SignalForm>
+        <FieldsFor name="author">
+            <TextField name="firstName" label="First name"/>
+            <TextField name="lastName" label="Last name"/>
+            <FullName/>
+        </FieldsFor>
+    </SignalForm>
+  );
+}
+```
+
+This is a bit inconvenient, since the `FullName` component needs to be aware of
+the fact that it's a chilf of a `FieldsFor` component.
+
+This is where the `useFieldsContext` hook comes in. It works similarly to `useFormContext` but gives us the current context instead:
+
+```tsx
+import { SignalForm, useFieldsContext } from "signal-form";
+import { TextField } from "./text-field" // our text field implementation from earlier
+
+function FullName(): JSX.Element {
+    let context = useFieldsContext();
+
+    let { firstName, lastName = } = context.data.value;
+    let fullName = [firstName, lastName].filter(Boolean).join(" ");
+
+    return <p>Full name: {fullName}</p>;
+}
+
+export function UserForm(): JSX.Element {
+  return (
+    <SignalForm>
+        <FieldsFor name="author">
+            <TextField name="firstName" label="First name"/>
+            <TextField name="lastName" label="Last name"/>
+            <FullName/>
+        </FieldsFor>
+    </SignalForm>
+  );
+}
+```
+
+Now our `FullName` component is more reuseable than before! We could even use it
+in an array without making any changes to it!
+
+```tsx
+import { FullName } from "./full-name"; // same implementation
+
+export function PostForm(): JSX.Element {
+  return (
+    <SignalForm schema={Schema}>
+      <TextField name="title" label="Title" />
+      <FieldsForArray name="authors">
+        <TextField name="firstName" label="First name" />
+        <TextField name="lastName" label="Last name" />
+        <FullName />
+        <RemoveButton>Remove author</RemoveButton>
+      </FieldsForArray>
+      <AddButton>Add author</AddButton>
+    </SignalForm>
+  );
+}
+```
