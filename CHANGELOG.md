@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.1.2
+
+### Patch Changes
+
+- 096fbab: Pass signal value to input
+
 ## 0.1.1
 
 ### Patch Changes
