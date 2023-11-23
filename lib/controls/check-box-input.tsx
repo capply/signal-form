@@ -1,6 +1,6 @@
 import { batch } from "@preact/signals-react";
-import { forwardRef } from "react";
-import type { InputHTMLAttributes } from "react";
+import { forwardRef, useCallback } from "react";
+import type { ChangeEventHandler, InputHTMLAttributes } from "react";
 import { useField } from "~/use-field";
 
 export type CheckBoxInputProps = Omit<
@@ -14,6 +14,17 @@ export const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
   ({ name, onChange, ...props }, ref) => {
     let field = useField<boolean>(name, { defaultValue: false });
 
+    let onChangeHandler: ChangeEventHandler<HTMLInputElement> = useCallback(
+      (e) => {
+        onChange?.(e);
+        batch(() => {
+          field.setData(e.target.checked);
+          field.setTouched();
+        });
+      },
+      []
+    );
+
     return (
       <>
         <input
@@ -22,13 +33,7 @@ export const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
           {...props}
           name={field.name}
           checked={field.data.value}
-          onChange={(e) => {
-            onChange?.(e);
-            batch(() => {
-              field.setData(e.target.checked);
-              field.setTouched();
-            });
-          }}
+          onChange={onChangeHandler}
           value="true"
         />
         <input type="hidden" name={field.name} value="false" />
