@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.1.3
+
+### Patch Changes
+
+- 501c49d: Fix useFieldsContext
+
 ## 0.1.2
 
 ### Patch Changes
