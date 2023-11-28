@@ -39,7 +39,7 @@ export function useFormContext<S extends AnyObjectSchema = any>() {
 }
 
 export function useFieldsContext() {
-  let context = useContext(FormContext);
+  let context = useContext(FieldsContext);
   if (context) {
     return context;
   } else {
