@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.1.4
+
+### Patch Changes
+
+- 5449d69: Relax react and signals-react dependencies
+
 ## 0.1.3
 
 ### Patch Changes
