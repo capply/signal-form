@@ -23,10 +23,10 @@
     "css-check": "ts-node --esm ./scripts/css-check.ts"
   },
   "dependencies": {
-    "@preact/signals-react": "^1.3.6",
+    "@preact/signals-react": "^1.1.0",
     "@remix-run/node": ">=1.19.0",
     "@remix-run/react": ">=1.19.0",
-    "react": "^18.2.0",
+    "react": "^18.0.0",
     "yup": "^1.3.2"
   },
   "devDependencies": {
