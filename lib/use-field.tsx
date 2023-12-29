@@ -3,6 +3,7 @@ import { signal as createSignal, computed } from "@preact/signals-react";
 import type { ReadonlySignal } from "@preact/signals-react";
 import { FormContext, FieldsContext } from "./context";
 import type { ValidationError } from "~/utils/validate";
+import { useSignals } from "@preact/signals-react/runtime";
 
 export type Field<T> = {
   name: string;
@@ -22,6 +23,8 @@ export function useField<T>(
   fieldName: string,
   options: UseFieldOptions = {}
 ): Field<T> {
+  useSignals();
+
   const formContext = useContext(FormContext);
   const fieldContext = useContext(FieldsContext);
 

@@ -5,6 +5,7 @@ import type { FieldsForProps } from "./fields-for";
 import { useFieldsArray } from "~/use-fields-array";
 import { FieldsContext, useFieldsContext } from "~/context";
 import type { ReadonlySignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
 
 export function FieldsArrayFor({
   name,
@@ -55,6 +56,7 @@ let FieldsArrayRowContext = createContext<FieldsArrayRow | undefined>(
 );
 
 export function useFieldsArrayRow() {
+  useSignals();
   let context = useContext(FieldsArrayRowContext);
   if (context) {
     return context;
