@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.2.0
+
+### Minor Changes
+
+- 73d6f31: Added support for signals 2.0
+
 ## 0.1.4
 
 ### Patch Changes
