@@ -3,6 +3,7 @@ import { createContext, useContext } from "react";
 import type { ReadonlySignal } from "@preact/signals-react";
 import type { ValidationError, ValidationResult } from "~/utils/validate";
 import type { AnyObjectSchema, InferType } from "yup";
+import { useSignals } from "@preact/signals-react/runtime";
 
 export type Touched = Record<string, boolean>;
 export type FieldsContext = {
@@ -30,6 +31,7 @@ export const FieldsContext = createContext<FieldsContext | undefined>(
 );
 
 export function useFormContext<S extends AnyObjectSchema = any>() {
+  useSignals();
   let context = useContext(FormContext) as FormContext<S>;
   if (context) {
     return context;
@@ -39,6 +41,7 @@ export function useFormContext<S extends AnyObjectSchema = any>() {
 }
 
 export function useFieldsContext() {
+  useSignals();
   let context = useContext(FieldsContext);
   if (context) {
     return context;
