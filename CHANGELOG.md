@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.2.1
+
+### Patch Changes
+
+- dd18f9a: Fix form id hidden field value
+
 ## 0.2.0
 
 ### Minor Changes
