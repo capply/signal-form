@@ -53,7 +53,7 @@ export function SignalForm<S extends AnyObjectSchema>({
     <Form id={id || formId} {...props} onSubmit={formContext.onSubmit}>
       <FormContext.Provider value={formContext}>
         <FieldsContext.Provider value={formContext}>
-          <input type="hidden" name="_formId" value={formId} />
+          <input type="hidden" name="_formId" value={id || formId} />
           {children}
         </FieldsContext.Provider>
       </FormContext.Provider>
