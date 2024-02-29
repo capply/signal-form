@@ -1,4 +1,5 @@
 import type { StoryObj, Meta } from "@storybook/react";
+import { userEvent, within } from "@storybook/testing-library";
 
 import {
   CheckBoxInput,
@@ -14,6 +15,8 @@ import {
 import { createRemixStoryDecorator } from "./utils/decorators";
 import { RemoveButton } from "~/controls/remove-button";
 import { AddButton } from "~/controls/add-button";
+import { useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
 
 function FormValues(): JSX.Element {
   let form = useFormContext();
@@ -148,5 +151,60 @@ export const Array: Story = {
         <FormValues />
       </SignalForm>
     );
+  },
+};
+
+export const Controlled: Story = {
+  render() {
+    let formData = useSignal({ title: "Monkey" });
+
+    function ShowTitle() {
+      useSignals();
+      return <>{formData.value.title}</>;
+    }
+
+    return (
+      <>
+        <SignalForm data={formData}>
+          <p>
+            <label htmlFor="title">Title</label>
+            <Input name="title" id="title" />
+          </p>
+        </SignalForm>
+        <p>
+          <button
+            type="button"
+            onClick={() =>
+              (formData.value = { title: formData.value.title?.toUpperCase() })
+            }
+          >
+            Uppercase
+          </button>
+        </p>
+        <p>
+          Hello <ShowTitle />
+        </p>
+      </>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    let canvas = within(canvasElement);
+    await canvas.findByText("Hello Monkey");
+    let titleInput = await canvas.findByLabelText("Title");
+
+    userEvent.clear(titleInput);
+    await canvas.findByText("Hello");
+
+    await userEvent.type(titleInput, "Theodore", { delay: 10 });
+
+    await canvas.findByText("Hello Theodore");
+
+    let uppercaseButton = await canvas.findByText("Uppercase", {
+      selector: "button",
+    });
+
+    userEvent.click(uppercaseButton);
+
+    await canvas.findByText("Hello THEODORE");
   },
 };
