@@ -1,7 +1,8 @@
 import { Form, useActionData } from "@remix-run/react";
 import type { FormProps } from "@remix-run/react";
-import type { FormEventHandler, ReactNode } from "react";
-import { useId, useMemo } from "react";
+import type { FormEventHandler, ForwardedRef, ReactNode } from "react";
+import { forwardRef, useId, useMemo } from "react";
+import type { Signal } from "@preact/signals-react";
 import { signal } from "@preact/signals-react";
 import type { AnyObjectSchema, InferType } from "yup";
 import { FieldsContext, FormContext } from "~/context";
@@ -24,47 +25,61 @@ export type SignalFormProps<S extends AnyObjectSchema> = {
   children?: ReactNode;
   schema?: S;
   defaultData?: DeepPartial<InferType<S>>;
+  data?: Signal<InferType<S>>;
 } & FormProps;
 
-export function SignalForm<S extends AnyObjectSchema>({
-  children,
-  schema,
-  defaultData,
-  id,
-  onSubmit,
-  ...props
-}: SignalFormProps<S>): JSX.Element {
-  let actionData = useActionData<ErrorActionData | undefined>();
-
-  let formId = useId();
-
-  let formContext: FormContext<S> = useMemo(() => {
-    return createFormContext<S>({
-      submittedData: actionData?.input,
-      submittedErrors: actionData?.errors,
-      defaultData,
+export const SignalForm = forwardRef(
+  <S extends AnyObjectSchema>(
+    {
+      children,
       schema,
-      id: id || formId,
+      defaultData,
+      data,
+      id,
       onSubmit,
-    });
-  }, [actionData]);
+      ...props
+    }: SignalFormProps<S>,
+    ref: ForwardedRef<HTMLFormElement>
+  ): JSX.Element => {
+    let actionData = useActionData<ErrorActionData | undefined>();
 
-  return (
-    <Form id={id || formId} {...props} onSubmit={formContext.onSubmit}>
-      <FormContext.Provider value={formContext}>
-        <FieldsContext.Provider value={formContext}>
-          <input type="hidden" name="_formId" value={id || formId} />
-          {children}
-        </FieldsContext.Provider>
-      </FormContext.Provider>
-    </Form>
-  );
-}
+    let formId = useId();
+
+    let formContext: FormContext<S> = useMemo(() => {
+      return createFormContext<S>({
+        submittedData: actionData?.input,
+        submittedErrors: actionData?.errors,
+        defaultData,
+        data,
+        schema,
+        id: id || formId,
+        onSubmit,
+      });
+    }, [actionData]);
+
+    return (
+      <Form
+        id={id || formId}
+        {...props}
+        onSubmit={formContext.onSubmit}
+        ref={ref}
+      >
+        <FormContext.Provider value={formContext}>
+          <FieldsContext.Provider value={formContext}>
+            <input type="hidden" name="_formId" value={id || formId} />
+            {children}
+          </FieldsContext.Provider>
+        </FormContext.Provider>
+      </Form>
+    );
+  }
+);
 
 type CreateFormContextOptions<S extends AnyObjectSchema> = {
   submittedErrors?: ValidationError[];
   submittedData?: any;
   defaultData?: DeepPartial<InferType<S>>;
+  data?: Signal<InferType<S>>;
   schema?: S;
   id: string;
   onSubmit?: FormEventHandler<HTMLFormElement>;
@@ -74,12 +89,13 @@ function createFormContext<S extends AnyObjectSchema>({
   submittedErrors,
   submittedData,
   defaultData,
+  data: outerData,
   schema,
   id,
   onSubmit,
 }: CreateFormContextOptions<S>): FormContext<S> {
   let result = signal(undefined);
-  let data = signal(submittedData || defaultData || {});
+  let data = outerData || signal(submittedData || defaultData || {});
   let errors = signal<ValidationError[]>(submittedErrors || []);
   let touched = signal({});
   let didSubmit = signal(!!submittedData);
