@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.2.2
+
+### Patch Changes
+
+- 4515d6a: Add support for external form data
+
 ## 0.2.1
 
 ### Patch Changes
