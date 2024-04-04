@@ -28,6 +28,10 @@ input[type="number"] {
   display: block;
 }
 
+input:read-only {
+  background: #eee;
+}
+
 textarea {
   border: 1px solid #ccc;
   padding: 0.5rem 1rem;
