@@ -45,7 +45,8 @@ export function validateSync<T extends AnyObjectSchema>(
   input: any
 ): ValidationResult<InferType<T>> {
   try {
-    let validationResult = schema.validateSync(input, {
+    let parsedInput = input instanceof FormData ? parseFormData(input) : input;
+    let validationResult = schema.validateSync(parsedInput, {
       abortEarly: false,
     });
     return { ok: true, input, status: "valid", data: validationResult };
@@ -64,7 +65,8 @@ export async function validate<T extends AnyObjectSchema>(
   input: any
 ): Promise<ValidationResult<InferType<T>>> {
   try {
-    let validationResult = await schema.validate(input, {
+    let parsedInput = input instanceof FormData ? parseFormData(input) : input;
+    let validationResult = await schema.validate(parsedInput, {
       abortEarly: false,
     });
     return { ok: true, input, status: "valid", data: validationResult };
@@ -80,13 +82,13 @@ export async function validate<T extends AnyObjectSchema>(
 
 export async function validateOrThrow<T extends AnyObjectSchema>(
   schema: T,
-  object: any
+  input: any
 ): Promise<InferType<T>> {
-  let result = await validate(schema, object);
+  let result = await validate(schema, input);
   if (result.ok) {
     return result.data;
   } else {
-    throw new ValidationErrorException(object, result.errors);
+    throw new ValidationErrorException(input, result.errors);
   }
 }
 
