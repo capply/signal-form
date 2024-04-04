@@ -43,16 +43,17 @@ As you can see, signal-form ships with some basic components for form elements. 
 
 ## Adding a schema
 
-Forms can be automatically validated by defining a schema using yup. Unlike with remix-validated-form, the schema is optional.
+Forms can be automatically validated by defining a schema using [yup][]. Unlike
+with remix-validated-form, the schema is optional.
 
 ```tsx
 import { SignalForm, Input, CheckBoxInput, schema } from "signal-form";
 
 const Schema = schema.object().shape({
-  firstName: schema.string().required(),
-  lastName: schema.string().required(),
-  email: schema.string(),
-  lastName: schema.boolean(),
+  firstName: schema.textField().required(),
+  lastName: schema.textField().required(),
+  email: schema.textField(),
+  isAdmin: schema.checkBox(),
 });
 
 export function UserForm(): JSX.Element {
@@ -75,7 +76,13 @@ export function UserForm(): JSX.Element {
 }
 ```
 
-Note that we're importing `schema` from `signal-form`, rather than using `yup` directly. This is a thin wrapper around `yup` that sets up some transforms which make the schema work better with form data.
+Note that we're importing `schema` from `signal-form`. The `schema` object
+contains both all schema methods from [yup][], such as `object` and `string`,
+but also has additional methods such as `textField` and `checkBox` which have
+additional transforms to make working with the schemas more convenient.
+
+Currently only [yup][] is supported as a schema validation library, alternative such
+as [zod][] are not supported.
 
 ## Nested objects
 
@@ -370,11 +377,11 @@ function FullName(): JSX.Element {
 export function UserForm(): JSX.Element {
   return (
     <SignalForm>
-        <FieldsFor name="author">
-            <TextField name="firstName" label="First name"/>
-            <TextField name="lastName" label="Last name"/>
-            <FullName/>
-        </FieldsFor>
+      <FieldsFor name="author">
+        <TextField name="firstName" label="First name"/>
+        <TextField name="lastName" label="Last name"/>
+        <FullName/>
+      </FieldsFor>
     </SignalForm>
   );
 }
@@ -401,3 +408,6 @@ export function PostForm(): JSX.Element {
   );
 }
 ```
+
+[yup]: https://github.com/jquense/yup
+[zod]: https://zod.dev

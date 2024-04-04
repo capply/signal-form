@@ -1,5 +1,5 @@
 import type { StoryObj, Meta } from "@storybook/react";
-import { userEvent, within } from "@storybook/testing-library";
+import { userEvent, within, expect } from "@storybook/test";
 
 import {
   CheckBoxInput,
@@ -10,6 +10,7 @@ import {
   Select,
   SignalForm,
   TextArea,
+  schema,
   useFormContext,
 } from "~/index";
 import { createRemixStoryDecorator } from "./utils/decorators";
@@ -17,6 +18,7 @@ import { RemoveButton } from "~/controls/remove-button";
 import { AddButton } from "~/controls/add-button";
 import { useSignal } from "@preact/signals-react";
 import { useSignals } from "@preact/signals-react/runtime";
+import { FieldErrors } from "~/controls/field-errors";
 
 function FormValues(): JSX.Element {
   let form = useFormContext();
@@ -206,5 +208,98 @@ export const Controlled: Story = {
     userEvent.click(uppercaseButton);
 
     await canvas.findByText("Hello THEODORE");
+  },
+};
+
+export const Schema: Story = {
+  render() {
+    let Schema = schema.object().shape({
+      firstName: schema.textField().required(),
+      lastName: schema.textField().required(),
+      beatle: schema.select(["john", "paul", "george"]),
+      email: schema.textField(),
+      isAdmin: schema.checkBox(),
+    });
+
+    function Result(): JSX.Element {
+      let formContext = useFormContext();
+
+      return (
+        <div data-testid="result">
+          {JSON.stringify(formContext.result.value)}
+        </div>
+      );
+    }
+
+    return (
+      <SignalForm schema={Schema}>
+        <p>
+          <label htmlFor="firstName">First name</label>
+          <Input name="firstName" id="firstName" />
+          <FieldErrors name="firstName" />
+        </p>
+        <p>
+          <label htmlFor="lastName">Last name</label>
+          <Input name="lastName" id="lastName" />
+          <FieldErrors name="lastName" />
+        </p>
+        <p>
+          <label htmlFor="email">Email</label>
+          <Input name="email" id="email" />
+          <FieldErrors name="email" />
+        </p>
+        <p>
+          <label htmlFor="beatle">Favorite Beatle</label>
+          <Select name="beatle" id="beatle">
+            <option value="john">John</option>
+            <option value="paul">Paul</option>
+            <option value="george">George</option>
+            <option value="ringo">Ringo</option>
+          </Select>
+          <FieldErrors name="beatle" />
+        </p>
+        <p>
+          <CheckBoxInput name="isAdmin" id="isAdmin" />
+          <label htmlFor="isAdmin">Admin</label>
+          <FieldErrors name="isAdmin" />
+        </p>
+
+        <Result />
+      </SignalForm>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    let canvas = within(canvasElement);
+
+    let firstNameInput = await canvas.findByLabelText("First name");
+    await userEvent.type(firstNameInput, "Theodore", { delay: 10 });
+
+    let lastNameInput = await canvas.findByLabelText("Last name");
+    await userEvent.type(lastNameInput, "Theosson", { delay: 10 });
+
+    let adminField = await canvas.findByLabelText("Admin");
+    await userEvent.click(adminField);
+
+    let beatleField = await canvas.findByLabelText("Favorite Beatle");
+    await userEvent.selectOptions(beatleField, "Ringo");
+    await canvas.findByText(
+      "beatle must be one of the following values: john, paul, george"
+    );
+    await userEvent.selectOptions(beatleField, "John");
+
+    userEvent.clear(lastNameInput);
+
+    await canvas.findByText("lastName is a required field");
+
+    await userEvent.type(lastNameInput, "Bjarnesson", { delay: 10 });
+
+    let resultDiv = await canvas.findByTestId("result");
+
+    let formValues = JSON.parse(resultDiv.textContent || "{}");
+
+    expect(formValues.firstName).toEqual("Theodore");
+    expect(formValues.lastName).toEqual("Bjarnesson");
+    expect(formValues.beatle).toEqual("john");
+    expect(formValues.isAdmin).toEqual(true);
   },
 };
