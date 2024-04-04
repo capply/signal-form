@@ -19,7 +19,9 @@ export function FieldsFor({ name, children }: FieldsForProps): JSX.Element {
     },
     setValue(subName, value) {
       let currentValue = parentContext.data.value[name] || {};
-      parentContext.setValue(name, { ...currentValue, [subName]: value });
+      if (currentValue[subName] !== value) {
+        parentContext.setValue(name, { ...currentValue, [subName]: value });
+      }
     },
   };
   return (

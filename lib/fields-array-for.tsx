@@ -87,8 +87,11 @@ export function FieldsArrayRowFor({
     },
     setValue(subName, value) {
       let array = parentContext.data.value[name].slice() || [];
-      array[index] = { ...array[index], [subName]: value };
-      parentContext.setValue(name, array);
+      array[index] ||= {};
+      if (array[index][subName] !== value) {
+        array[index] = { ...array[index], [subName]: value };
+        parentContext.setValue(name, array);
+      }
     },
   };
   let row = {

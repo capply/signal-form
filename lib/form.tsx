@@ -147,7 +147,9 @@ function createFormContext<S extends AnyObjectSchema>({
       touched.value = { ...touched.value, [name]: true };
     },
     setValue(name, value) {
-      data.value = { ...data.value, [name]: value };
+      if (data.value[name] !== value) {
+        data.value = { ...data.value, [name]: value };
+      }
       validate();
     },
   };
