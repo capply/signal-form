@@ -1,5 +1,16 @@
 # signal-form
 
+## 0.3.0
+
+### Minor Changes
+
+- cfefbae: Add schema implementation
+- c5f9839: Add support for multi selects
+
+### Patch Changes
+
+- 208da03: Improve reactive forms by not updating value if it hasn't changed
+
 ## 0.2.2
 
 ### Patch Changes
