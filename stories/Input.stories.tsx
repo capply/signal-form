@@ -4,7 +4,7 @@ import {
   AddButton,
   FieldsArrayFor,
   Input,
-  SignalForm,
+  Form,
   useField,
   useFieldsContext,
 } from "~/index";
@@ -13,9 +13,9 @@ import { useComputed, useSignalEffect } from "@preact/signals-react";
 
 const meta = {
   title: "SignalForm/Input",
-  component: SignalForm,
+  component: Form,
   decorators: [createRemixStoryDecorator()],
-} satisfies Meta<typeof SignalForm>;
+} satisfies Meta<typeof Form>;
 
 export default meta;
 
@@ -43,7 +43,7 @@ export const Calculated: Story = {
     }
 
     return (
-      <SignalForm
+      <Form
         defaultData={{ color: "blue", size: 0, beatle: "paul", isActive: true }}
       >
         <p>
@@ -57,7 +57,7 @@ export const Calculated: Story = {
           </label>
         </p>
         <FullName />
-      </SignalForm>
+      </Form>
     );
   },
 };
@@ -65,7 +65,7 @@ export const Calculated: Story = {
 export const Duplicate: Story = {
   render() {
     return (
-      <SignalForm
+      <Form
         defaultData={{ color: "blue", size: 0, beatle: "paul", isActive: true }}
       >
         <p>
@@ -78,7 +78,7 @@ export const Duplicate: Story = {
             Name: <Input name="name" />
           </label>
         </p>
-      </SignalForm>
+      </Form>
     );
   },
 };
@@ -121,9 +121,9 @@ export const Reactive: Story = {
       );
     }
     return (
-      <SignalForm defaultData={{ rows: [{ amount: 0 }] }}>
+      <Form defaultData={{ rows: [{ amount: 0 }] }}>
         <Fields />
-      </SignalForm>
+      </Form>
     );
   },
 };

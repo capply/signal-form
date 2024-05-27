@@ -22,5 +22,5 @@
     "@typescript-eslint/no-explicit-any": "off",
     "no-console": "warn"
   },
-  "ignorePatterns": ["playground"]
+  "ignorePatterns": ["playground", "dist"]
 }
