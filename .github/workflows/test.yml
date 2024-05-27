@@ -12,6 +12,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: "npm"
+          node-version: "20"
 
       - run: npm install
       - run: npm run build
@@ -22,6 +23,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: "npm"
+          node-version: "20"
 
       - run: npm install
       - run: npm run lint
@@ -32,6 +34,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: "npm"
+          node-version: "20"
 
       - run: npm install
       - run: npm run check
@@ -44,6 +47,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: "npm"
+          node-version: "20"
       - run: npm install
       - run: npm run build-storybook
       - run: npm run test:storybook
