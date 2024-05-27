@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.4.1
+
+### Patch Changes
+
+- 3b0bbaa: Don't package node dependencies
+
 ## 0.4.0
 
 ### Minor Changes
