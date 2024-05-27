@@ -36,7 +36,4 @@ export type * from "./use-field";
 export * from "./use-fields-array";
 export type * from "./use-fields-array";
 
-export * from "./use-is-submitting";
-export type * from "./use-is-submitting";
-
 export { schema } from "./schema";

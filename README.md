@@ -1,4 +1,4 @@
-# signal-form
+# SignalForm
 
 Powerful form library for React/Remix using Signals
 
@@ -6,7 +6,7 @@ When building forms with React, we want to have great performance, while also ma
 
 With Signals, powered by the fantastic [@preact/signal-react][] implementation, we can have our cake and eat it too! Blazing fast forms with surgical precision rerenders, combined with all state being easily accessible and all form fields being controlled. This finally allows us to build forms that are both fast in terms of render performance and so powerful that we can react to any change in the form.
 
-signal-form integrates conveniently with ReactRouter and Remix applications but can also be used on its own in any React application.
+SignalForm works great with Remix applications but can also be used on its own in any React application.
 
 ## Installation
 
@@ -19,11 +19,11 @@ npm install signal-form
 This is how you build a basic form with signal-form:
 
 ```tsx
-import { SignalForm, Input, CheckBoxInput } from "signal-form";
+import { Form, Input, CheckBoxInput } from "signal-form";
 
 export function UserForm(): JSX.Element {
   return (
-    <SignalForm>
+    <Form>
       <label>
         First name: <Input name="firstName" />
       </label>
@@ -36,12 +36,12 @@ export function UserForm(): JSX.Element {
       <label>
         Admin <CheckBoxInput name="isAdmin" />
       </label>
-    </SignalForm>
+    </Form>
   );
 }
 ```
 
-As you can see, signal-form ships with some basic components for form elements. These are thin wrappers around the `input`, `select` and `textarea` tags respectively. You can create your own field components which wrap these to add more advanced capabilities for your fields, but you can also use these components directly.
+As you can see, SignalForm ships with some basic components for form elements. These are thin wrappers around the `input`, `select` and `textarea` tags respectively. You can create your own field components which wrap these to add more advanced capabilities for your fields, but you can also use these components directly.
 
 ## Adding a schema
 
@@ -49,7 +49,7 @@ Forms can be automatically validated by defining a schema using [yup][]. Unlike
 with remix-validated-form, the schema is optional.
 
 ```tsx
-import { SignalForm, Input, CheckBoxInput, schema } from "signal-form";
+import { Form, Input, CheckBoxInput, schema } from "signal-form";
 
 const Schema = schema.object().shape({
   firstName: schema.textField().required(),
@@ -60,7 +60,7 @@ const Schema = schema.object().shape({
 
 export function UserForm(): JSX.Element {
   return (
-    <SignalForm schema={Schema}>
+    <Form schema={Schema}>
       <label>
         First name: <Input name="firstName" />
       </label>
@@ -73,7 +73,7 @@ export function UserForm(): JSX.Element {
       <label>
         Admin <CheckBoxInput name="isAdmin" />
       </label>
-    </SignalForm>
+    </Form>
   );
 }
 ```
@@ -91,7 +91,7 @@ as [zod][] are not supported.
 You can set up nested object structures by using the `FieldsFor` component:
 
 ```tsx
-import { SignalForm, Input, FieldsFor, schema } from "signal-form";
+import { Form, Input, FieldsFor, schema } from "signal-form";
 
 const Schema = schema.object().shape({
   title: schema.string().required(),
@@ -103,7 +103,7 @@ const Schema = schema.object().shape({
 
 export function PostForm(): JSX.Element {
   return (
-    <SignalForm schema={schema}>
+    <Form schema={schema}>
       <label>
         Title: <Input name="title" />
       </label>
@@ -115,14 +115,14 @@ export function PostForm(): JSX.Element {
           Last name: <Input name="lastName" />
         </label>
       </FieldsFor>
-    </SignalForm>
+    </Form>
   );
 }
 ```
 
 Note that while we passed `firstName` and `lastName` as the `name` attribute to
 `Input`, in the rendered HTML, the fields will actually be named
-`author.firstName` and `author.lastName` respectively. SignalForm automatically
+`author.firstName` and `author.lastName` respectively. signal-form automatically
 tracks the nesting of fields.
 
 This is not only convenient, but crucially it allows you to create reusable
@@ -130,7 +130,7 @@ components because we don't need to know ahead of time where in the form
 structure they will be used. For example:
 
 ```tsx
-import { SignalForm, Input, FieldsFor } from "signal-form";
+import { Form, Input, FieldsFor } from "signal-form";
 
 export function UserFields(): JSX.Element {
   return (
@@ -147,7 +147,7 @@ export function UserFields(): JSX.Element {
 
 export function PostForm(): JSX.Element {
   return (
-    <SignalForm>
+    <Form>
       <label>
         Title: <Input name="title" />
       </label>
@@ -157,7 +157,7 @@ export function PostForm(): JSX.Element {
       <FieldsFor name="editor">
         <UserFields />
       </FieldsFor>
-    </SignalForm>
+    </Form>
   );
 }
 ```
@@ -165,13 +165,13 @@ export function PostForm(): JSX.Element {
 ## Arrays
 
 You can also use the `FieldsForArray` helper to add multiple rows to a form.
-signal-form ships with the `AddButton` and `RemoveButton` helpers which wrap the
+SignalForm ships with the `AddButton` and `RemoveButton` helpers which wrap the
 `button` element to add and remove items in the array, but you can also create
 your own components to add/remove elements.
 
 ```tsx
 import {
-  SignalForm,
+  Form,
   Input,
   FieldsForArray,
   AddButton,
@@ -191,7 +191,7 @@ const Schema = schema.object().shape({
 
 export function PostForm(): JSX.Element {
   return (
-    <SignalForm schema={Schema}>
+    <Form schema={Schema}>
       <label>
         Title: <Input name="title" />
       </label>
@@ -205,14 +205,14 @@ export function PostForm(): JSX.Element {
         <RemoveButton>Remove author</RemoveButton>
       </FieldsForArray>
       <AddButton>Add author</AddButton>
-    </SignalForm>
+    </Form>
   );
 }
 ```
 
 ## Fields
 
-So far, we've been using the built in components of signal-form to construct
+So far, we've been using the built in components of SignalForm to construct
 forms. If you're building your own higher level field components, we encourage
 you to use these components internally as well.
 
@@ -241,7 +241,7 @@ The reason this is preferable to using the `input` element directly is for
 performance. By using the `Input` helper, the whole field does not need to be
 rerendered when the value of the field changes.
 
-But to understand signal-form a bit better, let's look at how we could build
+But to understand SignalForm a bit better, let's look at how we could build
 a simplified version of the same field component using the `useField` hook:
 
 ```tsx
@@ -311,7 +311,7 @@ rerender if any of the data changes.
 Let's look at how we can use the form context to combine the first and last name to dynamically print the full name:
 
 ```tsx
-import { SignalForm, useFormContext } from "signal-form";
+import { Form, useFormContext } from "signal-form";
 import { TextField } from "./text-field" // our text field implementation from earlier
 
 function FullName(): JSX.Element {
@@ -325,11 +325,11 @@ function FullName(): JSX.Element {
 
 export function UserForm(): JSX.Element {
   return (
-    <SignalForm>
+    <Form>
         <TextField name="firstName" label="First name"/>
         <TextField name="lastName" label="Last name"/>
         <FullName/>
-    </SignalForm>
+    </Form>
   );
 }
 ```
@@ -368,12 +368,13 @@ even when the first and last name are changed!
 
 ## Fields context
 
-Form context always gives us the full data of the entire form. But what if we
-used the `FieldsFor` helper to create a nested object. If we used form context
-here, we would have to reach into the `author` object to make this work:
+Form context always gives us the full data of the entire form. But if we used
+the `FieldsFor` helper to create a nested object this might not be what we want.
+If we used form context here, we would have to reach into the `author` object to
+make this work:
 
 ```tsx
-import { SignalForm, useFormContext } from "signal-form";
+import { Form, useFormContext } from "signal-form";
 import { TextField } from "./text-field" // our text field implementation from earlier
 
 function FullName(): JSX.Element {
@@ -387,24 +388,24 @@ function FullName(): JSX.Element {
 
 export function UserForm(): JSX.Element {
   return (
-    <SignalForm>
+    <Form>
         <FieldsFor name="author">
             <TextField name="firstName" label="First name"/>
             <TextField name="lastName" label="Last name"/>
             <FullName/>
         </FieldsFor>
-    </SignalForm>
+    </Form>
   );
 }
 ```
 
 This is a bit inconvenient, since the `FullName` component needs to be aware of
-the fact that it's a chilf of a `FieldsFor` component.
+the fact that it's a child of a `FieldsFor` component.
 
 This is where the `useFieldsContext` hook comes in. It works similarly to `useFormContext` but gives us the current context instead:
 
 ```tsx
-import { SignalForm, useFieldsContext } from "signal-form";
+import { Form, useFieldsContext } from "signal-form";
 import { TextField } from "./text-field" // our text field implementation from earlier
 
 function FullName(): JSX.Element {
@@ -418,13 +419,13 @@ function FullName(): JSX.Element {
 
 export function UserForm(): JSX.Element {
   return (
-    <SignalForm>
+    <Form>
       <FieldsFor name="author">
         <TextField name="firstName" label="First name"/>
         <TextField name="lastName" label="Last name"/>
         <FullName/>
       </FieldsFor>
-    </SignalForm>
+    </Form>
   );
 }
 ```
@@ -437,7 +438,7 @@ import { FullName } from "./full-name"; // same implementation
 
 export function PostForm(): JSX.Element {
   return (
-    <SignalForm schema={Schema}>
+    <Form schema={Schema}>
       <TextField name="title" label="Title" />
       <FieldsForArray name="authors">
         <TextField name="firstName" label="First name" />
@@ -446,8 +447,53 @@ export function PostForm(): JSX.Element {
         <RemoveButton>Remove author</RemoveButton>
       </FieldsForArray>
       <AddButton>Add author</AddButton>
-    </SignalForm>
+    </Form>
   );
+}
+```
+
+## Using Remix
+
+To use SignalForm with Remix, import everything from `signal-form/remix` instead:
+
+```tsx
+import { Form, Input, CheckBoxInput } from "signal-form/remix";
+
+export function UserForm(): JSX.Element {
+  return (
+    <Form>
+      <label>
+        First name: <Input name="firstName" />
+      </label>
+      <label>
+        Last name: <Input name="lastName" />
+      </label>
+      <label>
+        Email: <Input name="email" />
+      </label>
+      <label>
+        Admin <CheckBoxInput name="isAdmin" />
+      </label>
+    </Form>
+  );
+}
+```
+
+SignalForm works out of the box with server data from Remix actions. You can use
+the validation helpers to validate your data in actions, this will return data
+in a format that's understood by the Form component:
+
+```tsx
+import { validate } from "signal-form/remix";
+
+export function action({ request }) {
+  let result = await validateRequest(UserSchema, request);
+  if (result.ok) {
+    let user = await createUser(result.data);
+    return redirect(`/users/${user.id}`);
+  } else {
+    return result;
+  }
 }
 ```
 

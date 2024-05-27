@@ -1,4 +1,3 @@
-import { json } from "@remix-run/node";
 import type { AnyObjectSchema, InferType } from "yup";
 import { parseFormData } from "~/utils/parse-form-data";
 
@@ -31,13 +30,6 @@ export class ValidationErrorException extends Error {
   constructor(public data: any, public errors: ValidationError[]) {
     super(`Validation error: ${errors.map((e) => e.message).join(", ")}`);
   }
-}
-
-export function errorResponse(error: ValidationErrorResult) {
-  return json<ErrorActionData>(
-    { errors: error.errors, input: error.input },
-    { status: 422 }
-  );
 }
 
 export function validateSync<T extends AnyObjectSchema>(

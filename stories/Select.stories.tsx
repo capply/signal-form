@@ -1,15 +1,15 @@
 import type { StoryObj, Meta } from "@storybook/react";
 import { userEvent, within, expect } from "@storybook/test";
 
-import { Select, SignalForm, schema, useFormContext } from "~/index";
+import { Select, Form, schema, useFormContext } from "~/index";
 import { createRemixStoryDecorator } from "./utils/decorators";
 import { FieldErrors } from "~/controls/field-errors";
 
 const meta = {
   title: "SignalForm/Select",
-  component: SignalForm,
+  component: Form,
   decorators: [createRemixStoryDecorator()],
-} satisfies Meta<typeof SignalForm>;
+} satisfies Meta<typeof Form>;
 
 export default meta;
 
@@ -38,7 +38,7 @@ export const Single: Story = {
     });
 
     return (
-      <SignalForm schema={Schema} defaultData={{ pet: "cat" }}>
+      <Form schema={Schema} defaultData={{ pet: "cat" }}>
         <p>
           <label htmlFor="pet">Pet</label>
         </p>
@@ -57,7 +57,7 @@ export const Single: Story = {
         <FormValues />
 
         <button type="submit">Submit</button>
-      </SignalForm>
+      </Form>
     );
   },
   play: async ({ canvasElement }) => {
@@ -97,7 +97,7 @@ export const Multiple: Story = {
     });
 
     return (
-      <SignalForm schema={Schema} defaultData={{ pets: ["cat", "dog"] }}>
+      <Form schema={Schema} defaultData={{ pets: ["cat", "dog"] }}>
         <p>
           <label htmlFor="pets">Pets</label>
         </p>
@@ -116,7 +116,7 @@ export const Multiple: Story = {
         <FormValues />
 
         <button type="submit">Submit</button>
-      </SignalForm>
+      </Form>
     );
   },
   play: async ({ canvasElement }) => {

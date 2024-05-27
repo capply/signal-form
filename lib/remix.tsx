@@ -1,20 +1,27 @@
-import type { FormHTMLAttributes, ForwardedRef, ReactNode } from "react";
-import { forwardRef, useId, useMemo } from "react";
+import {
+  Form as RemixForm,
+  useActionData,
+  useNavigation,
+} from "@remix-run/react";
+import type { FormProps as RemixFormProps } from "@remix-run/react";
+import type { ForwardedRef, ReactNode } from "react";
+import { forwardRef, useEffect, useId, useMemo } from "react";
 import type { Signal } from "@preact/signals-react";
 import type { AnyObjectSchema, InferType } from "yup";
-import { FieldsContext, FormContext } from "~/context";
-import type { ValidationError } from "~/utils/validate";
+import { FieldsContext, FormContext, useFormContext } from "~/context";
+import type { ErrorActionData, ValidationErrorResult } from "~/utils/validate";
 import { createFormContext } from "./create-form-context";
 import type { DeepPartial } from "./utils/deep-partial";
+import { json } from "@remix-run/node";
+
+export * from "./index";
 
 export type FormProps<S extends AnyObjectSchema> = {
   children?: ReactNode;
   schema?: S;
   defaultData?: DeepPartial<InferType<S>>;
   data?: Signal<InferType<S>>;
-  submittedData?: DeepPartial<InferType<S>>;
-  submittedErrors?: ValidationError[];
-} & FormHTMLAttributes<HTMLFormElement>;
+} & RemixFormProps;
 
 export const Form = forwardRef(
   <S extends AnyObjectSchema>(
@@ -25,18 +32,23 @@ export const Form = forwardRef(
       data,
       id,
       onSubmit,
-      submittedData,
-      submittedErrors,
       ...props
     }: FormProps<S>,
     ref: ForwardedRef<HTMLFormElement>
   ): JSX.Element => {
+    let actionData = useActionData<ErrorActionData | undefined>();
     let formId = useId();
+
+    useEffect(() => {
+      if (actionData?.errors) {
+        formContext.setErrors(actionData.errors);
+      }
+    }, [actionData?.errors]);
 
     let formContext: FormContext<S> = useMemo(() => {
       return createFormContext<S>({
-        submittedErrors,
-        submittedData,
+        submittedErrors: actionData?.errors,
+        submittedData: actionData?.input,
         defaultData,
         data,
         schema,
@@ -46,7 +58,7 @@ export const Form = forwardRef(
     }, []);
 
     return (
-      <form
+      <RemixForm
         id={id || formId}
         {...props}
         onSubmit={formContext.onSubmit}
@@ -58,7 +70,24 @@ export const Form = forwardRef(
             {children}
           </FieldsContext.Provider>
         </FormContext.Provider>
-      </form>
+      </RemixForm>
     );
   }
 );
+
+export function errorResponse(error: ValidationErrorResult) {
+  return json<ErrorActionData>(
+    { errors: error.errors, input: error.input },
+    { status: 422 }
+  );
+}
+
+export function useIsSubmitting() {
+  let navigation = useNavigation();
+  let form = useFormContext();
+
+  return (
+    navigation.state === "submitting" &&
+    navigation.formData?.get("_formId") === form.formId
+  );
+}

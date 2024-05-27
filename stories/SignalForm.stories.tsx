@@ -8,7 +8,7 @@ import {
   Input,
   RadioInput,
   Select,
-  SignalForm,
+  Form,
   TextArea,
   schema,
   useFormContext,
@@ -28,9 +28,9 @@ function FormValues(): JSX.Element {
 // More on how to set up stories at: https://storybook.js.org/docs/7.0/react/writing-stories/introduction
 const meta = {
   title: "SignalForm/SignalForm",
-  component: SignalForm,
+  component: Form,
   decorators: [createRemixStoryDecorator()],
-} satisfies Meta<typeof SignalForm>;
+} satisfies Meta<typeof Form>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -38,7 +38,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render() {
     return (
-      <SignalForm
+      <Form
         defaultData={{ color: "blue", size: 0, beatle: "paul", isActive: true }}
       >
         <p>
@@ -94,7 +94,7 @@ export const Default: Story = {
           </label>
         </p>
         <FormValues />
-      </SignalForm>
+      </Form>
     );
   },
 };
@@ -102,7 +102,7 @@ export const Default: Story = {
 export const Nested: Story = {
   render() {
     return (
-      <SignalForm>
+      <Form>
         <p>
           <label>
             Title: <Input name="title" />
@@ -121,7 +121,7 @@ export const Nested: Story = {
           </p>
         </FieldsFor>
         <FormValues />
-      </SignalForm>
+      </Form>
     );
   },
 };
@@ -129,7 +129,7 @@ export const Nested: Story = {
 export const Array: Story = {
   render() {
     return (
-      <SignalForm>
+      <Form>
         <p>
           <label>
             Title: <Input name="title" />
@@ -151,7 +151,7 @@ export const Array: Story = {
         </FieldsArrayFor>
         <AddButton name="authors">Add author</AddButton>
         <FormValues />
-      </SignalForm>
+      </Form>
     );
   },
 };
@@ -167,12 +167,12 @@ export const Controlled: Story = {
 
     return (
       <>
-        <SignalForm data={formData}>
+        <Form data={formData}>
           <p>
             <label htmlFor="title">Title</label>
             <Input name="title" id="title" />
           </p>
-        </SignalForm>
+        </Form>
         <p>
           <button
             type="button"
@@ -232,7 +232,7 @@ export const Schema: Story = {
     }
 
     return (
-      <SignalForm schema={Schema}>
+      <Form schema={Schema}>
         <p>
           <label htmlFor="firstName">First name</label>
           <Input name="firstName" id="firstName" />
@@ -265,7 +265,7 @@ export const Schema: Story = {
         </p>
 
         <Result />
-      </SignalForm>
+      </Form>
     );
   },
   play: async ({ canvasElement }) => {
