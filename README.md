@@ -1,10 +1,10 @@
 # SignalForm
 
-Powerful form library for React/Remix using Signals
+**Powerful form library for React/Remix using Signals**
 
 When building forms with React, we want to have great performance, while also making it easy to build dynamic forms which react to user input and adapt to changes. These goals are seemingly at odds with each other. ReactHookForms and its derivatives, such as RemixValidatedForm tried to solve the performance problem by not storing the current form state in React state, instead opting for a DOM-based approach, where form components are generally uncontrolled. This works great for cases where forms are mostly static, but it become quite complicated when forms are dynamic.
 
-With Signals, powered by the fantastic [@preact/signal-react][] implementation, we can have our cake and eat it too! Blazing fast forms with surgical precision rerenders, combined with all state being easily accessible and all form fields being controlled. This finally allows us to build forms that are both fast in terms of render performance and so powerful that we can react to any change in the form.
+With Signals, powered by the fantastic [@preact/signals-react][] implementation, we can have our cake and eat it too! With the power of signals, we can have blazing fast forms with surgical precision rerenders, combined with all state being easily accessible and all form fields being controlled. This finally allows us to build forms that are both fast in terms of render performance and so powerful that we can react to any user input.
 
 SignalForm works great with Remix applications but can also be used on its own in any React application.
 
@@ -122,7 +122,7 @@ export function PostForm(): JSX.Element {
 
 Note that while we passed `firstName` and `lastName` as the `name` attribute to
 `Input`, in the rendered HTML, the fields will actually be named
-`author.firstName` and `author.lastName` respectively. signal-form automatically
+`author.firstName` and `author.lastName` respectively. SignalForm automatically
 tracks the nesting of fields.
 
 This is not only convenient, but crucially it allows you to create reusable
@@ -209,6 +209,34 @@ export function PostForm(): JSX.Element {
   );
 }
 ```
+
+Of course, `FieldsArrayFor` works the same way as `FieldsFor` when it comes to nesting, automatically adjusting the field name to add an array index. We can use this together with the `UserFields` component we made before:
+
+```tsx
+import {
+  Form,
+  Input,
+  FieldsForArray,
+  AddButton,
+  RemoveButton,
+} from "signal-form";
+import { UserFields } from "./user-fields";
+
+export function PostForm(): JSX.Element {
+  return (
+    <Form schema={Schema}>
+      <label>
+        Title: <Input name="title" />
+      </label>
+      <FieldsForArray name="authors">
+        <UserFields/>
+        <RemoveButton>Remove author</RemoveButton>
+      </FieldsForArray>
+      <AddButton>Add author</AddButton>
+    </Form>
+  );
+}
+``` 
 
 ## Fields
 
