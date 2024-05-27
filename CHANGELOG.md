@@ -1,5 +1,16 @@
 # signal-form
 
+## 0.4.0
+
+### Minor Changes
+
+- 879d914: Separate remix entrypoint
+
+### Patch Changes
+
+- 4a7ffba: Set server errors on form context rathern than breaking memoization
+- 14b799e: Automatically convert form data in validate
+
 ## 0.3.0
 
 ### Minor Changes
