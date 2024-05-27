@@ -1,4 +1,4 @@
-name: Publish
+name: publish
 on:
   push:
     branches:
@@ -7,14 +7,14 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.x
           cache: "npm"
+          node-version: "20"
 
       - name: Generate a token
         id: generate-token
