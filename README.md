@@ -2,9 +2,11 @@
 
 Powerful form library for React/Remix using Signals
 
-When building forms with React, especially in Remix applications, we want to have great performance, while also making it easy to build dynamic forms which react to user input and adapt to changes. These goals are seemingly at odds with each other. ReactHookForms and its derivatives, such as RemixValidatedForm tried to solve the performance problem by not storing the current form state in React state, instead opting for a DOM-based approach, where form components are generally uncontrolled. This works great for cases where forms are mostly static, but it become quite complicated when forms are dynamic.
+When building forms with React, we want to have great performance, while also making it easy to build dynamic forms which react to user input and adapt to changes. These goals are seemingly at odds with each other. ReactHookForms and its derivatives, such as RemixValidatedForm tried to solve the performance problem by not storing the current form state in React state, instead opting for a DOM-based approach, where form components are generally uncontrolled. This works great for cases where forms are mostly static, but it become quite complicated when forms are dynamic.
 
-With Signals, powered by the fantastic @preact/signal-react implementation, we can have our cake and eat it too! Blazing fast forms with surgical precision rerenders, combined with all state being easily accessible and all form fields being controlled. This finally allows us to build forms that are both fast in terms of render performance and so powerful that we can react to any change in the form.
+With Signals, powered by the fantastic [@preact/signal-react][] implementation, we can have our cake and eat it too! Blazing fast forms with surgical precision rerenders, combined with all state being easily accessible and all form fields being controlled. This finally allows us to build forms that are both fast in terms of render performance and so powerful that we can react to any change in the form.
+
+signal-form integrates conveniently with ReactRouter and Remix applications but can also be used on its own in any React application.
 
 ## Installation
 
@@ -89,36 +91,76 @@ as [zod][] are not supported.
 You can set up nested object structures by using the `FieldsFor` component:
 
 ```tsx
-import { signalform, input, fieldsfor, schema } from "signal-form";
+import { SignalForm, Input, FieldsFor, schema } from "signal-form";
 
-const schema = schema.object().shape({
+const Schema = schema.object().shape({
   title: schema.string().required(),
   author: schema.object().shape({
-    firstname: schema.string().required(),
-    lastname: schema.string().required(),
+    firstName: schema.string().required(),
+    lastName: schema.string().required(),
   }),
 });
 
-export function postform(): jsx.element {
+export function PostForm(): JSX.Element {
   return (
-    <signalform schema={schema}>
+    <SignalForm schema={schema}>
       <label>
-        title: <input name="title" />
+        Title: <Input name="title" />
       </label>
-      <fieldsfor name="author">
+      <FieldsFor name="author">
         <label>
-          first name: <input name="firstname" />
+          First name: <Input name="firstName" />
         </label>
         <label>
-          last name: <input name="lastname" />
+          Last name: <Input name="lastName" />
         </label>
-      </fieldsfor>
-    </signalform>
+      </FieldsFor>
+    </SignalForm>
   );
 }
 ```
 
-Note that the `name` attribute of the `firstName` and `lastName` fields will be `author.firstName` and `author.lastName` respectively.
+Note that while we passed `firstName` and `lastName` as the `name` attribute to
+`Input`, in the rendered HTML, the fields will actually be named
+`author.firstName` and `author.lastName` respectively. SignalForm automatically
+tracks the nesting of fields.
+
+This is not only convenient, but crucially it allows you to create reusable
+components because we don't need to know ahead of time where in the form
+structure they will be used. For example:
+
+```tsx
+import { SignalForm, Input, FieldsFor } from "signal-form";
+
+export function UserFields(): JSX.Element {
+  return (
+    <>
+      <label>
+        First name: <Input name="firstName" />
+      </label>
+      <label>
+        Last name: <Input name="lastName" />
+      </label>
+    </>
+  );
+}
+
+export function PostForm(): JSX.Element {
+  return (
+    <SignalForm>
+      <label>
+        Title: <Input name="title" />
+      </label>
+      <FieldsFor name="author">
+        <UserFields />
+      </FieldsFor>
+      <FieldsFor name="editor">
+        <UserFields />
+      </FieldsFor>
+    </SignalForm>
+  );
+}
+```
 
 ## Arrays
 
@@ -171,8 +213,8 @@ export function PostForm(): JSX.Element {
 ## Fields
 
 So far, we've been using the built in components of signal-form to construct
-forms. If you're building your own field component, we encourage you to use
-these components internally as well.
+forms. If you're building your own higher level field components, we encourage
+you to use these components internally as well.
 
 ```tsx
 import { Input, FieldErrors } from "signal-form";
@@ -411,3 +453,4 @@ export function PostForm(): JSX.Element {
 
 [yup]: https://github.com/jquense/yup
 [zod]: https://zod.dev
+[@preact/signals-react]: https://github.com/preactjs/signals
