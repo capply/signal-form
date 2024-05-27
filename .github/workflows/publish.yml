@@ -16,6 +16,12 @@ jobs:
           node-version: 16.x
           cache: "npm"
 
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.CAPPLY_BOT_APP_ID }}
+          private-key: ${{ secrets.CAPPLY_BOT_SECRET }}
       - run: npm install
       - run: npm run build
       - name: Create Release Pull Request or Publish
@@ -24,5 +30,5 @@ jobs:
         with:
           publish: npm run release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
