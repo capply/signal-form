@@ -1,7 +1,7 @@
 import { Form, useActionData } from "@remix-run/react";
 import type { FormProps } from "@remix-run/react";
 import type { FormEventHandler, ForwardedRef, ReactNode } from "react";
-import { forwardRef, useId, useMemo } from "react";
+import { forwardRef, useEffect, useId, useMemo } from "react";
 import type { Signal } from "@preact/signals-react";
 import { signal } from "@preact/signals-react";
 import type { AnyObjectSchema, InferType } from "yup";
@@ -42,20 +42,25 @@ export const SignalForm = forwardRef(
     ref: ForwardedRef<HTMLFormElement>
   ): JSX.Element => {
     let actionData = useActionData<ErrorActionData | undefined>();
-
     let formId = useId();
+
+    useEffect(() => {
+      if (actionData?.errors) {
+        formContext.setErrors(actionData.errors);
+      }
+    }, [actionData?.errors]);
 
     let formContext: FormContext<S> = useMemo(() => {
       return createFormContext<S>({
-        submittedData: actionData?.input,
         submittedErrors: actionData?.errors,
+        submittedData: actionData?.input,
         defaultData,
         data,
         schema,
         id: id || formId,
         onSubmit,
       });
-    }, [actionData]);
+    }, []);
 
     return (
       <Form
@@ -151,6 +156,10 @@ function createFormContext<S extends AnyObjectSchema>({
         data.value = { ...data.value, [name]: value };
       }
       validate();
+    },
+    setErrors(value) {
+      errors.value = value;
+      result.value = undefined;
     },
   };
 }
