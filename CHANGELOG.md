@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.5.0
+
+### Minor Changes
+
+- f36fcdf: Automatically set data value if field has a value in the DOM
+
 ## 0.4.1
 
 ### Patch Changes
