@@ -1,7 +1,8 @@
 import { batch } from "@preact/signals-react";
-import { forwardRef, useCallback } from "react";
+import { forwardRef, useCallback, useEffect } from "react";
 import type { ChangeEventHandler, InputHTMLAttributes } from "react";
 import { useField } from "~/use-field";
+import { useForwardedRef } from "~/utils/use-forwarded-ref";
 
 export type CheckBoxInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -11,8 +12,15 @@ export type CheckBoxInputProps = Omit<
 };
 
 export const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
-  ({ name, onChange, ...props }, ref) => {
+  ({ name, onChange, ...props }, forwardedRef) => {
     let field = useField<boolean>(name, { defaultValue: false });
+    let ref = useForwardedRef(forwardedRef);
+
+    useEffect(() => {
+      if (ref.current) {
+        field.setData(ref.current.checked);
+      }
+    }, []);
 
     let onChangeHandler: ChangeEventHandler<HTMLInputElement> = useCallback(
       (e) => {
