@@ -229,20 +229,30 @@ export function PostForm(): JSX.Element {
         Title: <Input name="title" />
       </label>
       <FieldsForArray name="authors">
-        <UserFields/>
+        <UserFields />
         <RemoveButton>Remove author</RemoveButton>
       </FieldsForArray>
       <AddButton>Add author</AddButton>
     </Form>
   );
 }
-``` 
+```
 
 ## Fields
 
-So far, we've been using the built in components of SignalForm to construct
-forms. If you're building your own higher level field components, we encourage
-you to use these components internally as well.
+SignalForm includes wrappers for working with form elements. We have already
+seen `Input`, which thinly wraps the HTML `input` tag. This element can be used
+for all `input` types that have text-like behaviour, for example `type=number`
+or even `type=range`. However, for checkboxes and radio buttons, the specific
+`CheckBoxInput` and `RadioInput` wrappers are included, since the handling of
+data for these fields is slightly different. There are also `TextArea` and
+`Select` wrappers.
+
+Whenever possible you should prefer to use these built-in wrappers. They are
+more performant, and they handle some tricky edge-cases.
+
+If you're building your own higher-level components, you should use these
+wrapper elements internally. For example:
 
 ```tsx
 import { Input, FieldErrors } from "signal-form";
@@ -265,12 +275,9 @@ export function TextField({ name, label }: TextFieldProps): JSX.Element {
 }
 ```
 
-The reason this is preferable to using the `input` element directly is for
-performance. By using the `Input` helper, the whole field does not need to be
-rerendered when the value of the field changes.
-
-But to understand SignalForm a bit better, let's look at how we could build
-a simplified version of the same field component using the `useField` hook:
+But to understand the internals of SignalForm a bit better, let's look at how we
+could build a simplified version of the same field component using the
+`useField` hook:
 
 ```tsx
 import { useField } from "signal-form";
@@ -306,7 +313,7 @@ to both read and write data, as well as get access to the error messages of the
 field, if it has a schema.
 
 Both `data` and `errors` are signals. If you don't know what a signal is,
-please review this excellent blog post by the Preact team. To access the value
+please review [this excellent blog post][blog] by the Preact team. To access the value
 of these signals we need to access the `.value` property on them, this also
 subscribes our `TextField` component to any changes to these signals, and it
 will rerender if their values change.
@@ -343,20 +350,20 @@ import { Form, useFormContext } from "signal-form";
 import { TextField } from "./text-field" // our text field implementation from earlier
 
 function FullName(): JSX.Element {
-    let context = useFormContext();
+  let context = useFormContext();
 
-    let { firstName, lastName = } = context.data.value;
-    let fullName = [firstName, lastName].filter(Boolean).join(" ");
+  let { firstName, lastName = } = context.data.value;
+  let fullName = [firstName, lastName].filter(Boolean).join(" ");
 
-    return <p>Full name: {fullName}</p>;
+  return <p>Full name: {fullName}</p>;
 }
 
 export function UserForm(): JSX.Element {
   return (
     <Form>
-        <TextField name="firstName" label="First name"/>
-        <TextField name="lastName" label="Last name"/>
-        <FullName/>
+      <TextField name="firstName" label="First name"/>
+      <TextField name="lastName" label="Last name"/>
+      <FullName/>
     </Form>
   );
 }
@@ -378,14 +385,14 @@ a lot!
 import { useComputed } from "@preact/signals-react";
 
 function FullName(): JSX.Element {
-    let context = useFormContext();
+  let context = useFormContext();
 
-    let fullName = useComputed(() => {
-        let { firstName, lastName = } = context.data.value;
-        return [firstName, lastName].filter(Boolean).join(" ");
-    });
+  let fullName = useComputed(() => {
+    let { firstName, lastName = } = context.data.value;
+    return [firstName, lastName].filter(Boolean).join(" ");
+  });
 
-    return <p>Full name: {fullName}</p>;
+  return <p>Full name: {fullName}</p>;
 }
 ```
 
@@ -406,22 +413,22 @@ import { Form, useFormContext } from "signal-form";
 import { TextField } from "./text-field" // our text field implementation from earlier
 
 function FullName(): JSX.Element {
-    let context = useFormContext();
+  let context = useFormContext();
 
-    let { firstName, lastName = } = context.data.value?.author;
-    let fullName = [firstName, lastName].filter(Boolean).join(" ");
+  let { firstName, lastName = } = context.data.value?.author;
+  let fullName = [firstName, lastName].filter(Boolean).join(" ");
 
-    return <p>Full name: {fullName}</p>;
+  return <p>Full name: {fullName}</p>;
 }
 
 export function UserForm(): JSX.Element {
   return (
     <Form>
-        <FieldsFor name="author">
-            <TextField name="firstName" label="First name"/>
-            <TextField name="lastName" label="Last name"/>
-            <FullName/>
-        </FieldsFor>
+      <FieldsFor name="author">
+        <TextField name="firstName" label="First name"/>
+        <TextField name="lastName" label="Last name"/>
+        <FullName/>
+      </FieldsFor>
     </Form>
   );
 }
@@ -430,7 +437,8 @@ export function UserForm(): JSX.Element {
 This is a bit inconvenient, since the `FullName` component needs to be aware of
 the fact that it's a child of a `FieldsFor` component.
 
-This is where the `useFieldsContext` hook comes in. It works similarly to `useFormContext` but gives us the current context instead:
+This is where the `useFieldsContext` hook comes in. It works similarly to
+`useFormContext` but gives us the current context instead:
 
 ```tsx
 import { Form, useFieldsContext } from "signal-form";
@@ -528,3 +536,4 @@ export function action({ request }) {
 [yup]: https://github.com/jquense/yup
 [zod]: https://zod.dev
 [@preact/signals-react]: https://github.com/preactjs/signals
+[blog]: https://preactjs.com/blog/introducing-signals/
