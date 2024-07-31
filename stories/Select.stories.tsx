@@ -78,6 +78,45 @@ export const Single: Story = {
   },
 };
 
+export const SingleWithNoValue: Story = {
+  render() {
+    let Schema = schema.object().shape({
+      pet: schema.string().required(),
+    });
+
+    return (
+      <Form schema={Schema} defaultData={{}}>
+        <p>
+          <label htmlFor="pet">Pet</label>
+        </p>
+        <p>
+          <Select name="pet" id="pet">
+            <option value="cat">Cat</option>
+            <option value="dog">Dog</option>
+            <option value="bird">Bird</option>
+          </Select>
+        </p>
+        <FieldErrors name="pet" />
+        <FormValues />
+
+        <button type="submit">Submit</button>
+      </Form>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    let canvas = within(canvasElement);
+
+    let petField = await canvas.findByLabelText("Pet");
+    let valuesDiv = await canvas.findByTestId("values");
+
+    expect(JSON.parse(valuesDiv.textContent!).pet).toEqual("cat");
+
+    await userEvent.selectOptions(petField, "Bird");
+
+    expect(JSON.parse(valuesDiv.textContent!).pet).toEqual("bird");
+  },
+};
+
 export const Multiple: Story = {
   render() {
     let validPets = [

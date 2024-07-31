@@ -1,8 +1,9 @@
 import type { ReadonlySignal } from "@preact/signals-react";
 import { batch, useComputed } from "@preact/signals-react";
-import { forwardRef, useCallback } from "react";
+import { forwardRef, useCallback, useEffect } from "react";
 import type { ChangeEventHandler, InputHTMLAttributes } from "react";
 import { useField } from "~/use-field";
+import { useForwardedRef } from "../utils/use-forwarded-ref";
 
 export type InputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -13,8 +14,15 @@ export type InputProps = Omit<
 };
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ name, value, onChange, ...props }, ref) => {
+  ({ name, value, onChange, ...props }, forwardedRef) => {
     let field = useField<string>(name, { defaultValue: "" });
+    let ref = useForwardedRef(forwardedRef);
+
+    useEffect(() => {
+      if (ref.current) {
+        field.setData(ref.current.value);
+      }
+    }, []);
 
     let valueResult = useComputed(() => {
       if (typeof value === "string") {
