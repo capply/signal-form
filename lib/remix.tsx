@@ -6,7 +6,7 @@ import {
 import type { FormProps as RemixFormProps } from "@remix-run/react";
 import type { ForwardedRef, ReactNode } from "react";
 import { forwardRef, useEffect, useId, useMemo } from "react";
-import type { Signal } from "@preact/signals-react";
+import { useSignal, type Signal } from "@preact/signals-react";
 import type { AnyObjectSchema, InferType } from "yup";
 import { FieldsContext, FormContext, useFormContext } from "~/context";
 import type { ErrorActionData, ValidationErrorResult } from "~/utils/validate";
@@ -38,6 +38,7 @@ export const Form = forwardRef(
   ): JSX.Element => {
     let actionData = useActionData<ErrorActionData | undefined>();
     let formId = useId();
+    let schemaSignal = useSignal(schema);
 
     useEffect(() => {
       if (actionData?.errors) {
@@ -51,11 +52,16 @@ export const Form = forwardRef(
         submittedData: actionData?.input,
         defaultData,
         data,
-        schema,
+        schema: schemaSignal,
         id: id || formId,
         onSubmit,
       });
     }, []);
+
+    useEffect(() => {
+      schemaSignal.value = schema;
+      formContext.validate();
+    }, [schema]);
 
     return (
       <RemixForm
