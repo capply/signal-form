@@ -1,9 +1,9 @@
 import type { FormHTMLAttributes, ForwardedRef, ReactNode } from "react";
-import { forwardRef, useId, useMemo } from "react";
-import type { Signal } from "@preact/signals-react";
+import { forwardRef, useEffect, useId, useMemo } from "react";
+import { useSignal, type Signal } from "@preact/signals-react";
 import type { AnyObjectSchema, InferType } from "yup";
 import { FieldsContext, FormContext } from "~/context";
-import type { ValidationError } from "~/utils/validate";
+import { type ValidationError } from "~/utils/validate";
 import { createFormContext } from "./create-form-context";
 import type { DeepPartial } from "./utils/deep-partial";
 
@@ -32,6 +32,7 @@ export const Form = forwardRef(
     ref: ForwardedRef<HTMLFormElement>
   ): JSX.Element => {
     let formId = useId();
+    let schemaSignal = useSignal(schema);
 
     let formContext: FormContext<S> = useMemo(() => {
       return createFormContext<S>({
@@ -39,11 +40,16 @@ export const Form = forwardRef(
         submittedData,
         defaultData,
         data,
-        schema,
+        schema: schemaSignal,
         id: id || formId,
         onSubmit,
       });
     }, []);
+
+    useEffect(() => {
+      schemaSignal.value = schema;
+      formContext.validate();
+    }, [schema]);
 
     return (
       <form

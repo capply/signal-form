@@ -1,5 +1,5 @@
 import type { FormEventHandler } from "react";
-import type { Signal } from "@preact/signals-react";
+import type { ReadonlySignal, Signal } from "@preact/signals-react";
 import { signal } from "@preact/signals-react";
 import type { AnyObjectSchema, InferType } from "yup";
 import type { FormContext } from "~/context";
@@ -12,7 +12,7 @@ type CreateFormContextOptions<S extends AnyObjectSchema> = {
   submittedData?: any;
   defaultData?: DeepPartial<InferType<S>>;
   data?: Signal<InferType<S>>;
-  schema?: S;
+  schema: ReadonlySignal<S | undefined>;
   id: string;
   onSubmit?: FormEventHandler<HTMLFormElement>;
 };
@@ -33,8 +33,8 @@ export function createFormContext<S extends AnyObjectSchema>({
   let didSubmit = signal(!!submittedData);
 
   function validate(): ValidationResult<InferType<S>> {
-    if (schema) {
-      let validationResult = validateSync(schema, data.value);
+    if (schema.value) {
+      let validationResult = validateSync(schema.value, data.value);
       if (validationResult.ok) {
         errors.value = [];
         result.value = validationResult.data;
