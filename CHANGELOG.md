@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.6.0
+
+### Minor Changes
+
+- 7cd3f65: React to schema changes dynamically
+
 ## 0.5.0
 
 ### Minor Changes
