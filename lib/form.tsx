@@ -6,6 +6,7 @@ import { FieldsContext, FormContext } from "~/context";
 import { type ValidationError } from "~/utils/validate";
 import { createFormContext } from "./create-form-context";
 import type { DeepPartial } from "./utils/deep-partial";
+import { useForwardedRef } from "~/utils/use-forwarded-ref";
 
 export type FormProps<S extends AnyObjectSchema> = {
   children?: ReactNode;
@@ -29,10 +30,11 @@ export const Form = forwardRef(
       submittedErrors,
       ...props
     }: FormProps<S>,
-    ref: ForwardedRef<HTMLFormElement>
+    forwardedRef: ForwardedRef<HTMLFormElement>
   ): JSX.Element => {
     let formId = useId();
     let schemaSignal = useSignal(schema);
+    let formRef = useForwardedRef(forwardedRef);
 
     let formContext: FormContext<S> = useMemo(() => {
       return createFormContext<S>({
@@ -43,6 +45,7 @@ export const Form = forwardRef(
         schema: schemaSignal,
         id: id || formId,
         onSubmit,
+        formRef,
       });
     }, []);
 
@@ -56,7 +59,7 @@ export const Form = forwardRef(
         id={id || formId}
         {...props}
         onSubmit={formContext.onSubmit}
-        ref={ref}
+        ref={formRef}
       >
         <FormContext.Provider value={formContext}>
           <FieldsContext.Provider value={formContext}>

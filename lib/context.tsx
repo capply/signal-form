@@ -22,6 +22,7 @@ export type FormContext<S extends AnyObjectSchema> = FieldsContext & {
   validate(): ValidationResult<InferType<S>>;
   onSubmit: FormEventHandler<HTMLFormElement>;
   setErrors(errors: ValidationError[]): void;
+  formRef: React.RefObject<HTMLFormElement>;
 };
 
 export const FormContext = createContext<FormContext<any> | undefined>(

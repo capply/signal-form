@@ -2,6 +2,7 @@ import {
   Form as RemixForm,
   useActionData,
   useNavigation,
+  useSubmit as useRemixSubmit,
 } from "@remix-run/react";
 import type { FormProps as RemixFormProps } from "@remix-run/react";
 import type { ForwardedRef, ReactNode } from "react";
@@ -13,6 +14,7 @@ import type { ErrorActionData, ValidationErrorResult } from "~/utils/validate";
 import { createFormContext } from "./create-form-context";
 import type { DeepPartial } from "./utils/deep-partial";
 import { json } from "@remix-run/node";
+import { useForwardedRef } from "~/utils/use-forwarded-ref";
 
 export * from "./index";
 
@@ -34,7 +36,7 @@ export const Form = forwardRef(
       onSubmit,
       ...props
     }: FormProps<S>,
-    ref: ForwardedRef<HTMLFormElement>
+    forwardedRef: ForwardedRef<HTMLFormElement>
   ): JSX.Element => {
     let actionData = useActionData<ErrorActionData | undefined>();
     let formId = useId();
@@ -46,6 +48,8 @@ export const Form = forwardRef(
       }
     }, [actionData?.errors]);
 
+    let formRef = useForwardedRef(forwardedRef);
+
     let formContext: FormContext<S> = useMemo(() => {
       return createFormContext<S>({
         submittedErrors: actionData?.errors,
@@ -55,6 +59,7 @@ export const Form = forwardRef(
         schema: schemaSignal,
         id: id || formId,
         onSubmit,
+        formRef,
       });
     }, []);
 
@@ -68,7 +73,7 @@ export const Form = forwardRef(
         id={id || formId}
         {...props}
         onSubmit={formContext.onSubmit}
-        ref={ref}
+        ref={formRef}
       >
         <FormContext.Provider value={formContext}>
           <FieldsContext.Provider value={formContext}>
@@ -96,4 +101,11 @@ export function useIsSubmitting() {
     navigation.state === "submitting" &&
     navigation.formData?.get("_formId") === form.formId
   );
+}
+
+export function useSubmit() {
+  let remixSubmit = useRemixSubmit();
+  let context = useFormContext();
+
+  return () => remixSubmit(context.formRef.current);
 }
