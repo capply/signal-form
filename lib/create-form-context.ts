@@ -15,6 +15,7 @@ type CreateFormContextOptions<S extends AnyObjectSchema> = {
   schema: ReadonlySignal<S | undefined>;
   id: string;
   onSubmit?: FormEventHandler<HTMLFormElement>;
+  formRef: React.RefObject<HTMLFormElement>;
 };
 
 export function createFormContext<S extends AnyObjectSchema>({
@@ -25,6 +26,7 @@ export function createFormContext<S extends AnyObjectSchema>({
   schema,
   id,
   onSubmit,
+  formRef,
 }: CreateFormContextOptions<S>): FormContext<S> {
   let result = signal(undefined);
   let data = outerData || signal(submittedData || defaultData || {});
@@ -61,6 +63,7 @@ export function createFormContext<S extends AnyObjectSchema>({
     touched,
     didSubmit,
     formId: id,
+    formRef,
     validate,
     onSubmit(event) {
       onSubmit?.(event);
