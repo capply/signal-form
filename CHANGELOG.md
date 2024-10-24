@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.6.1
+
+### Patch Changes
+
+- fa22d63: Add formRef and useSubmit hook
+
 ## 0.6.0
 
 ### Minor Changes
