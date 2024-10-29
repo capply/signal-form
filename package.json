@@ -1,7 +1,7 @@
 {
   "name": "signal-form",
   "license": "MIT",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
