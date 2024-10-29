@@ -4,6 +4,7 @@ import { useSignal, type Signal } from "@preact/signals-react";
 import type { AnyObjectSchema, InferType } from "yup";
 import { FieldsContext, FormContext } from "~/context";
 import { type ValidationError } from "~/utils/validate";
+import type { OnSubmitHandler } from "./create-form-context";
 import { createFormContext } from "./create-form-context";
 import type { DeepPartial } from "./utils/deep-partial";
 import { useForwardedRef } from "~/utils/use-forwarded-ref";
@@ -15,7 +16,8 @@ export type FormProps<S extends AnyObjectSchema> = {
   data?: Signal<InferType<S>>;
   submittedData?: DeepPartial<InferType<S>>;
   submittedErrors?: ValidationError[];
-} & FormHTMLAttributes<HTMLFormElement>;
+  onSubmit?: OnSubmitHandler;
+} & Omit<FormHTMLAttributes<HTMLFormElement>, "onSubmit">;
 
 export const Form = forwardRef(
   <S extends AnyObjectSchema>(
