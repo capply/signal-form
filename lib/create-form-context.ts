@@ -1,4 +1,4 @@
-import type { FormEventHandler } from "react";
+import type { SyntheticEvent } from "react";
 import type { ReadonlySignal, Signal } from "@preact/signals-react";
 import { signal } from "@preact/signals-react";
 import type { AnyObjectSchema, InferType } from "yup";
@@ -7,6 +7,11 @@ import type { ValidationResult, ValidationError } from "~/utils/validate";
 import { validateSync } from "~/utils/validate";
 import type { DeepPartial } from "./utils/deep-partial";
 
+export type OnSubmitHandler = (
+  event: SyntheticEvent<HTMLFormElement>,
+  context: FormContext<any>
+) => void;
+
 type CreateFormContextOptions<S extends AnyObjectSchema> = {
   submittedErrors?: ValidationError[];
   submittedData?: any;
@@ -14,7 +19,7 @@ type CreateFormContextOptions<S extends AnyObjectSchema> = {
   data?: Signal<InferType<S>>;
   schema: ReadonlySignal<S | undefined>;
   id: string;
-  onSubmit?: FormEventHandler<HTMLFormElement>;
+  onSubmit?: OnSubmitHandler;
   formRef: React.RefObject<HTMLFormElement>;
 };
 
@@ -56,7 +61,7 @@ export function createFormContext<S extends AnyObjectSchema>({
     }
   }
 
-  return {
+  let context: FormContext<S> = {
     data,
     result,
     errors,
@@ -66,7 +71,7 @@ export function createFormContext<S extends AnyObjectSchema>({
     formRef,
     validate,
     onSubmit(event) {
-      onSubmit?.(event);
+      onSubmit?.(event, context);
       if (!event.isPropagationStopped()) {
         didSubmit.value = true;
         let validationResult = validate();
@@ -92,4 +97,6 @@ export function createFormContext<S extends AnyObjectSchema>({
       result.value = undefined;
     },
   };
+
+  return context;
 }

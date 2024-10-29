@@ -11,6 +11,7 @@ import { useSignal, type Signal } from "@preact/signals-react";
 import type { AnyObjectSchema, InferType } from "yup";
 import { FieldsContext, FormContext, useFormContext } from "~/context";
 import type { ErrorActionData, ValidationErrorResult } from "~/utils/validate";
+import type { OnSubmitHandler } from "./create-form-context";
 import { createFormContext } from "./create-form-context";
 import type { DeepPartial } from "./utils/deep-partial";
 import { json } from "@remix-run/node";
@@ -23,7 +24,8 @@ export type FormProps<S extends AnyObjectSchema> = {
   schema?: S;
   defaultData?: DeepPartial<InferType<S>>;
   data?: Signal<InferType<S>>;
-} & RemixFormProps;
+  onSubmit?: OnSubmitHandler;
+} & Omit<RemixFormProps, "onSubmit">;
 
 export const Form = forwardRef(
   <S extends AnyObjectSchema>(
