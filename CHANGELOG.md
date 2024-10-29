@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.6.2
+
+### Patch Changes
+
+- bd8a6ca: Add context in onSubmit callback
+
 ## 0.6.1
 
 ### Patch Changes
