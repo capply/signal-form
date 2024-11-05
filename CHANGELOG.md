@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.6.3
+
+### Patch Changes
+
+- ae4b547: Remove errorResponse helper, as it interferes with vite tree-shaking
+
 ## 0.6.2
 
 ### Patch Changes
