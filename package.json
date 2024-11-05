@@ -39,7 +39,6 @@
     "yup": "^1.3.2"
   },
   "optionalDependencies": {
-    "@remix-run/node": ">=1.19.0",
     "@remix-run/react": ">=1.19.0"
   },
   "devDependencies": {

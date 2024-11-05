@@ -10,11 +10,10 @@ import { forwardRef, useEffect, useId, useMemo } from "react";
 import { useSignal, type Signal } from "@preact/signals-react";
 import type { AnyObjectSchema, InferType } from "yup";
 import { FieldsContext, FormContext, useFormContext } from "~/context";
-import type { ErrorActionData, ValidationErrorResult } from "~/utils/validate";
+import type { ErrorActionData } from "~/utils/validate";
 import type { OnSubmitHandler } from "./create-form-context";
 import { createFormContext } from "./create-form-context";
 import type { DeepPartial } from "./utils/deep-partial";
-import { json } from "@remix-run/node";
 import { useForwardedRef } from "~/utils/use-forwarded-ref";
 
 export * from "./index";
@@ -87,13 +86,6 @@ export const Form = forwardRef(
     );
   }
 );
-
-export function errorResponse(error: ValidationErrorResult) {
-  return json<ErrorActionData>(
-    { errors: error.errors, input: error.input },
-    { status: 422 }
-  );
-}
 
 export function useIsSubmitting() {
   let navigation = useNavigation();
