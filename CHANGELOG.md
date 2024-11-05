@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.6.4
+
+### Patch Changes
+
+- d4b31a8: Validate search params
+
 ## 0.6.3
 
 ### Patch Changes
