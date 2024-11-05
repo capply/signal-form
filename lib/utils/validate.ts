@@ -37,8 +37,7 @@ export function validateSync<T extends AnyObjectSchema>(
   input: any
 ): ValidationResult<InferType<T>> {
   try {
-    let parsedInput = input instanceof FormData ? parseFormData(input) : input;
-    let validationResult = schema.validateSync(parsedInput, {
+    let validationResult = schema.validateSync(parseFormData(input), {
       abortEarly: false,
     });
     return { ok: true, input, status: "valid", data: validationResult };
@@ -57,8 +56,7 @@ export async function validate<T extends AnyObjectSchema>(
   input: any
 ): Promise<ValidationResult<InferType<T>>> {
   try {
-    let parsedInput = input instanceof FormData ? parseFormData(input) : input;
-    let validationResult = await schema.validate(parsedInput, {
+    let validationResult = await schema.validate(parseFormData, {
       abortEarly: false,
     });
     return { ok: true, input, status: "valid", data: validationResult };
@@ -84,42 +82,18 @@ export async function validateOrThrow<T extends AnyObjectSchema>(
   }
 }
 
-export async function validateFormData<T extends AnyObjectSchema>(
-  schema: T,
-  formData: FormData
-): Promise<ValidationResult<InferType<T>>> {
-  let object = parseFormData(formData);
-  return await validate(schema, object);
-}
-
-export async function validateFormDataOrThrow<T extends AnyObjectSchema>(
-  schema: T,
-  formData: FormData
-): Promise<InferType<T>> {
-  let result = await validateFormData(schema, formData);
-  if (result.ok) {
-    return result.data;
-  } else {
-    throw new ValidationErrorException(formData, result.errors);
-  }
-}
-
 export async function validateRequest<T extends AnyObjectSchema>(
   schema: T,
   request: Request
 ): Promise<ValidationResult<InferType<T>>> {
   let formData = await request.formData();
-  return await validateFormData(schema, formData);
+  return await validate(schema, formData);
 }
 
 export async function validateRequestOrThrow<T extends AnyObjectSchema>(
   schema: T,
   request: Request
 ): Promise<InferType<T>> {
-  let result = await validateRequest(schema, request);
-  if (result.ok) {
-    return result.data;
-  } else {
-    throw new ValidationErrorException(request, result.errors);
-  }
+  let formData = await request.formData();
+  return await validateOrThrow(schema, formData);
 }
