@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { useSignal, computed } from "@preact/signals-react";
-import { FieldsContext, useFieldsContext } from "~/context";
+import { useSignal, computed } from "signals-react-safe";
+import { FieldsContext, useFieldsContext } from "~/fields-context";
 
 export type FieldsForProps = {
   name: string;

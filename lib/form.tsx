@@ -1,8 +1,9 @@
 import type { FormHTMLAttributes, ForwardedRef, ReactNode } from "react";
 import { forwardRef, useEffect, useId, useMemo } from "react";
-import { useSignal, type Signal } from "@preact/signals-react";
+import { useSignal, type Signal } from "signals-react-safe";
 import type { AnyObjectSchema, InferType } from "yup";
-import { FieldsContext, FormContext } from "~/context";
+import { FormContext } from "~/form-context";
+import { FieldsContext } from "~/fields-context";
 import { type ValidationError } from "~/utils/validate";
 import type { OnSubmitHandler } from "./create-form-context";
 import { createFormContext } from "./create-form-context";

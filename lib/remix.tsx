@@ -7,9 +7,10 @@ import {
 import type { FormProps as RemixFormProps } from "@remix-run/react";
 import type { ForwardedRef, ReactNode } from "react";
 import { forwardRef, useEffect, useId, useMemo } from "react";
-import { useSignal, type Signal } from "@preact/signals-react";
+import { useSignal, type Signal } from "signals-react-safe";
 import type { AnyObjectSchema, InferType } from "yup";
-import { FieldsContext, FormContext, useFormContext } from "~/context";
+import { FieldsContext } from "~/fields-context";
+import { FormContext, useFormContext } from "~/form-context";
 import type { ErrorActionData } from "~/utils/validate";
 import type { OnSubmitHandler } from "./create-form-context";
 import { createFormContext } from "./create-form-context";

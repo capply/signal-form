@@ -1,31 +1,50 @@
 import type { ReactNode } from "react";
 import { createContext, useContext, useMemo } from "react";
-import { useSignal, computed } from "@preact/signals-react";
+import { useSignal, computed, useSignalValue } from "signals-react-safe";
 import type { FieldsForProps } from "./fields-for";
 import { useFieldsArray } from "~/use-fields-array";
-import { FieldsContext, useFieldsContext } from "~/context";
-import type { ReadonlySignal } from "@preact/signals-react";
-import { useSignals } from "@preact/signals-react/runtime";
+import { FieldsContext, useFieldsContext } from "~/fields-context";
+import type { ReadonlySignal } from "signals-react-safe";
+
+export type FieldsArrayRow = {
+  remove(): void;
+  index: number;
+  length: ReadonlySignal<number>;
+};
+
+let FieldsArrayRowContext = createContext<FieldsArrayRow | undefined>(
+  undefined
+);
+
+export function useFieldsArrayRow() {
+  let context = useContext(FieldsArrayRowContext);
+  if (context) {
+    return context;
+  } else {
+    throw new Error("row context is not defined");
+  }
+}
+
+export function useFieldsArrayRowLength(): number {
+  let context = useFieldsArrayRow();
+  let value = useSignalValue(context.length);
+  return value;
+}
 
 export function FieldsArrayFor({
   name,
   children,
 }: FieldsForProps): JSX.Element {
-  let field = useFieldsArray(name);
+  let array = useFieldsArray(name);
+  let keys = useSignalValue(array.keys);
   let innerMemo = useMemo(
-    () => (
-      <FieldsArrayForInner
-        name={name}
-        keys={field.keys.value}
-        children={children}
-      />
-    ),
-    [field.keys.value.join(",")]
+    () => <FieldsArrayForInner name={name} keys={keys} children={children} />,
+    [keys.join(",")]
   );
   return innerMemo;
 }
 
-export function FieldsArrayForInner({
+function FieldsArrayForInner({
   keys,
   name,
   children,
@@ -46,26 +65,8 @@ export type FieldsArrayRowForProps = {
   index: number;
   children?: ReactNode;
 };
-type FieldsArrayRow = {
-  remove(): void;
-  index: number;
-  length: ReadonlySignal<number>;
-};
-let FieldsArrayRowContext = createContext<FieldsArrayRow | undefined>(
-  undefined
-);
 
-export function useFieldsArrayRow() {
-  useSignals();
-  let context = useContext(FieldsArrayRowContext);
-  if (context) {
-    return context;
-  } else {
-    throw new Error("row context is not defined");
-  }
-}
-
-export function FieldsArrayRowFor({
+function FieldsArrayRowFor({
   name,
   index,
   children,

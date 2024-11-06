@@ -1,18 +1,9 @@
 import type { FormEventHandler } from "react";
 import { createContext, useContext } from "react";
-import type { ReadonlySignal } from "@preact/signals-react";
+import { useSignalValue, type ReadonlySignal } from "signals-react-safe";
 import type { ValidationError, ValidationResult } from "~/utils/validate";
 import type { AnyObjectSchema, InferType } from "yup";
-import { useSignals } from "@preact/signals-react/runtime";
-
-export type Touched = Record<string, boolean>;
-export type FieldsContext = {
-  path?: string;
-  data: ReadonlySignal<Record<string, any>>;
-  touched: ReadonlySignal<Touched>;
-  setTouched(name: string): void;
-  setValue(name: string, value: any): void;
-};
+import type { FieldsContext, Touched } from "~/fields-context";
 
 export type FormContext<S extends AnyObjectSchema> = FieldsContext & {
   errors: ReadonlySignal<ValidationError[]>;
@@ -28,12 +19,8 @@ export type FormContext<S extends AnyObjectSchema> = FieldsContext & {
 export const FormContext = createContext<FormContext<any> | undefined>(
   undefined
 );
-export const FieldsContext = createContext<FieldsContext | undefined>(
-  undefined
-);
 
 export function useFormContext<S extends AnyObjectSchema = any>() {
-  useSignals();
   let context = useContext(FormContext) as FormContext<S>;
   if (context) {
     return context;
@@ -42,12 +29,34 @@ export function useFormContext<S extends AnyObjectSchema = any>() {
   }
 }
 
-export function useFieldsContext() {
-  useSignals();
-  let context = useContext(FieldsContext);
-  if (context) {
-    return context;
-  } else {
-    throw new Error("fields context is not defined");
-  }
+export function useFormContextData<T = any>(): T {
+  let context = useFormContext();
+  let value = useSignalValue(context.data);
+  return value as T;
+}
+
+export function useFormContextTouched(): Touched {
+  let context = useFormContext();
+  let value = useSignalValue(context.touched);
+  return value;
+}
+
+export function useFormContextDidSubmit(): boolean {
+  let context = useFormContext();
+  let value = useSignalValue(context.didSubmit);
+  return value;
+}
+
+export function useFormContextErrors(): ValidationError[] {
+  let context = useFormContext();
+  let value = useSignalValue(context.errors);
+  return value;
+}
+
+export function useFormContextResult<
+  S extends AnyObjectSchema = any
+>(): InferType<S> {
+  let context = useFormContext();
+  let value = useSignalValue(context.result);
+  return value;
 }

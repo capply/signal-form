@@ -1,5 +1,5 @@
-import type { ReadonlySignal } from "@preact/signals-react";
-import { batch, useComputed } from "@preact/signals-react";
+import type { ReadonlySignal } from "signals-react-safe";
+import { batch, useComputedValue } from "signals-react-safe";
 import { forwardRef, useCallback, useEffect } from "react";
 import type { ChangeEventHandler, InputHTMLAttributes } from "react";
 import { useField } from "~/use-field";
@@ -15,7 +15,7 @@ export type InputProps = Omit<
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ name, value, onChange, ...props }, forwardedRef) => {
-    let field = useField<string>(name, { defaultValue: "" });
+    let field = useField<string>(name);
     let ref = useForwardedRef(forwardedRef);
 
     useEffect(() => {
@@ -24,13 +24,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       }
     }, []);
 
-    let valueResult = useComputed(() => {
+    let valueResult = useComputedValue<string>(() => {
       if (typeof value === "string") {
         return value;
       } else if (value) {
         return value.value;
       } else {
-        return field.data.value;
+        return field.data.value || "";
       }
     });
 
@@ -50,7 +50,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         {...props}
         name={field.name}
-        value={valueResult.value}
+        value={valueResult}
         onChange={onChangeHandler}
       />
     );

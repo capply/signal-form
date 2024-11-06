@@ -9,7 +9,7 @@ import {
   useFieldsContext,
 } from "~/index";
 import { createRemixStoryDecorator } from "./utils/decorators";
-import { useComputed, useSignalEffect } from "@preact/signals-react";
+import { useComputed, useSignalEffect } from "signals-react-safe";
 
 const meta = {
   title: "SignalForm/Input",

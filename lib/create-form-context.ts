@@ -1,8 +1,8 @@
 import type { SyntheticEvent } from "react";
-import type { ReadonlySignal, Signal } from "@preact/signals-react";
-import { signal } from "@preact/signals-react";
+import type { ReadonlySignal, Signal } from "signals-react-safe";
+import { signal } from "signals-react-safe";
 import type { AnyObjectSchema, InferType } from "yup";
-import type { FormContext } from "~/context";
+import type { FormContext } from "~/form-context";
 import type { ValidationResult, ValidationError } from "~/utils/validate";
 import { validateSync } from "~/utils/validate";
 import type { DeepPartial } from "./utils/deep-partial";
