@@ -56,7 +56,7 @@ export async function validate<T extends AnyObjectSchema>(
   input: any
 ): Promise<ValidationResult<InferType<T>>> {
   try {
-    let validationResult = await schema.validate(parseFormData, {
+    let validationResult = await schema.validate(parseFormData(input), {
       abortEarly: false,
     });
     return { ok: true, input, status: "valid", data: validationResult };
