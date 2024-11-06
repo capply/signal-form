@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.7.0
+
+### Minor Changes
+
+- 187df71: Switch to using signals-react-safe. This is a breaking change, since signals are no longer automatically subscribed. In most cases, you should use the `useFieldData`, `useFormContextData`, etc... hooks instead of accessing signals directly.
+
 ## 0.6.5
 
 ### Patch Changes
