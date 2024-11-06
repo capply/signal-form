@@ -1,7 +1,7 @@
-import { batch } from "@preact/signals-react";
+import { batch } from "signals-react-safe";
 import { forwardRef, useCallback, useEffect } from "react";
 import type { ChangeEventHandler, SelectHTMLAttributes } from "react";
-import { useField } from "~/use-field";
+import { useField, useFieldData } from "~/use-field";
 import { useForwardedRef } from "~/utils/use-forwarded-ref";
 
 export type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
@@ -20,7 +20,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 
 export const SingleSelect = forwardRef<HTMLSelectElement, SelectProps>(
   ({ name, multiple, onChange, ...props }, forwardedRef) => {
-    let field = useField<string>(name, { defaultValue: "" });
+    let field = useField(name);
+    let value = useFieldData<string>(name, "");
     let ref = useForwardedRef(forwardedRef);
 
     useEffect(() => {
@@ -46,7 +47,7 @@ export const SingleSelect = forwardRef<HTMLSelectElement, SelectProps>(
         ref={ref}
         {...props}
         name={field.name}
-        value={field.data.value}
+        value={value}
         onChange={onChangeHandler}
       />
     );
@@ -55,7 +56,8 @@ export const SingleSelect = forwardRef<HTMLSelectElement, SelectProps>(
 
 export const MultipleSelect = forwardRef<HTMLSelectElement, SelectProps>(
   ({ name, multiple, onChange, ...props }, forwardedRef) => {
-    let field = useField<string[]>(name, { defaultValue: "" });
+    let field = useField(name);
+    let value = useFieldData<string[]>(name, []);
     let ref = useForwardedRef<HTMLSelectElement>(forwardedRef);
 
     useEffect(() => {
@@ -81,7 +83,7 @@ export const MultipleSelect = forwardRef<HTMLSelectElement, SelectProps>(
         ref={ref}
         {...props}
         name={field.name}
-        value={field.data.value}
+        value={value}
         onChange={onChangeHandler}
       />
     );

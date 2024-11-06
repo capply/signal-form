@@ -11,18 +11,17 @@ import {
   Form,
   TextArea,
   schema,
-  useFormContext,
+  useFormContextData,
 } from "~/index";
 import { createRemixStoryDecorator } from "./utils/decorators";
 import { RemoveButton } from "~/controls/remove-button";
 import { AddButton } from "~/controls/add-button";
-import { useSignal } from "@preact/signals-react";
-import { useSignals } from "@preact/signals-react/runtime";
+import { useSignal, useSignalValue } from "signals-react-safe";
 import { FieldErrors } from "~/controls/field-errors";
 
 function FormValues(): JSX.Element {
-  let form = useFormContext();
-  return <pre>{JSON.stringify(form.data.value, null, 2)}</pre>;
+  let data = useFormContextData();
+  return <pre>{JSON.stringify(data, null, 2)}</pre>;
 }
 
 // More on how to set up stories at: https://storybook.js.org/docs/7.0/react/writing-stories/introduction
@@ -161,8 +160,8 @@ export const Controlled: Story = {
     let formData = useSignal({ title: "Monkey" });
 
     function ShowTitle() {
-      useSignals();
-      return <>{formData.value.title}</>;
+      let data = useSignalValue(formData);
+      return <>{data.title}</>;
     }
 
     return (
@@ -222,13 +221,9 @@ export const Schema: Story = {
     });
 
     function Result(): JSX.Element {
-      let formContext = useFormContext();
+      let data = useFormContextData();
 
-      return (
-        <div data-testid="result">
-          {JSON.stringify(formContext.result.value)}
-        </div>
-      );
+      return <div data-testid="result">{JSON.stringify(data)}</div>;
     }
 
     return (

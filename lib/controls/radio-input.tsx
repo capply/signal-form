@@ -1,4 +1,4 @@
-import { batch, useComputed } from "@preact/signals-react";
+import { batch, useComputedValue } from "signals-react-safe";
 import { forwardRef, useCallback, useEffect } from "react";
 import type { ChangeEventHandler, InputHTMLAttributes } from "react";
 import { useField } from "~/use-field";
@@ -15,7 +15,7 @@ export type RadioInputProps = Omit<
 export const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(
   ({ name, value, onChange, ...props }, forwardedRef) => {
     let field = useField<string>(name);
-    let isChecked = useComputed(() => {
+    let isChecked = useComputedValue(() => {
       return field.data.value?.toString() === value.toString();
     });
 
@@ -44,7 +44,7 @@ export const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(
         ref={ref}
         {...props}
         name={field.name}
-        checked={isChecked.value}
+        checked={isChecked}
         onChange={onChangeHandler}
         value={value}
       />

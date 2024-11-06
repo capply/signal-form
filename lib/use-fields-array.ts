@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { computed } from "@preact/signals-react";
-import type { ReadonlySignal } from "@preact/signals-react";
+import { computed } from "signals-react-safe";
+import type { ReadonlySignal } from "signals-react-safe";
 import type { Field } from "./use-field";
 import { useField } from "./use-field";
 

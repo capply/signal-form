@@ -18,8 +18,11 @@ export { parseFormData } from "./utils/parse-form-data";
 export * from "./utils/validate";
 export type * from "./utils/validate";
 
-export * from "./context";
-export type * from "./context";
+export * from "./fields-context";
+export type * from "./fields-context";
+
+export * from "./form-context";
+export type * from "./form-context";
 
 export * from "./fields-array-for";
 export type * from "./fields-array-for";

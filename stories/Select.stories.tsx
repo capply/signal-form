@@ -1,7 +1,7 @@
 import type { StoryObj, Meta } from "@storybook/react";
 import { userEvent, within, expect } from "@storybook/test";
 
-import { Select, Form, schema, useFormContext } from "~/index";
+import { Select, Form, schema, useFormContextData } from "~/index";
 import { createRemixStoryDecorator } from "./utils/decorators";
 import { FieldErrors } from "~/controls/field-errors";
 
@@ -16,10 +16,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 function FormValues(): JSX.Element {
-  let form = useFormContext();
-  return (
-    <pre data-testid="values">{JSON.stringify(form.data.value, null, 2)}</pre>
-  );
+  let data = useFormContextData();
+  return <pre data-testid="values">{JSON.stringify(data, null, 2)}</pre>;
 }
 
 export const Single: Story = {

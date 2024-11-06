@@ -1,12 +1,14 @@
 import { useContext, useMemo } from "react";
-import { signal as createSignal, computed } from "@preact/signals-react";
-import type { ReadonlySignal } from "@preact/signals-react";
-import { FormContext, FieldsContext } from "./context";
+import { signal as createSignal, computed } from "signals-react-safe";
+import type { ReadonlySignal } from "signals-react-safe";
+import { FieldsContext } from "./fields-context";
+import { FormContext } from "./form-context";
 import type { ValidationError } from "~/utils/validate";
-import { useSignals } from "@preact/signals-react/runtime";
+import { useSignalValue } from "signals-react-safe";
 
 export type Field<T> = {
   name: string;
+  id: string;
   data: ReadonlySignal<T | undefined>;
   errors: ReadonlySignal<ValidationError[]>;
   touched: ReadonlySignal<boolean>;
@@ -15,16 +17,11 @@ export type Field<T> = {
   setData(value: T): void;
 };
 
-export type UseFieldOptions = {
-  defaultValue?: any;
+export type UseFieldOptions<D = undefined> = {
+  defaultValue?: D;
 };
 
-export function useField<T>(
-  fieldName: string,
-  options: UseFieldOptions = {}
-): Field<T> {
-  useSignals();
-
+export function useField<T>(fieldName: string): Field<T | undefined> {
   const formContext = useContext(FormContext);
   const fieldContext = useContext(FieldsContext);
 
@@ -48,9 +45,8 @@ export function useField<T>(
 
       return {
         name: fullPath,
-        data: computed(
-          () => fieldContext.data.value[fieldName] ?? options.defaultValue
-        ),
+        id: fullPath.replace(/[^a-zA-Z0-9]/g, "-"),
+        data: computed(() => fieldContext.data.value[fieldName]),
         errors,
         touched,
         isValid,
@@ -62,10 +58,11 @@ export function useField<T>(
         },
       };
     } else {
-      let fieldSignal = createSignal<T | undefined>(options.defaultValue);
+      let fieldSignal = createSignal<T | undefined>(undefined);
       let touchedSignal = createSignal(false);
       return {
         name: fieldName,
+        id: fieldName.replace(/[^a-zA-Z0-9]/g, "-"),
         data: computed(() => fieldSignal.value),
         errors: computed(() => []),
         touched: computed(() => touchedSignal.value),
@@ -79,4 +76,27 @@ export function useField<T>(
       };
     }
   }, [fieldName, formContext, fieldContext]);
+}
+
+export function useFieldData<T>(fieldName: string): T | undefined;
+export function useFieldData<T>(fieldName: string, defaultValue: T): T;
+export function useFieldData<T>(
+  fieldName: string,
+  defaultValue?: T
+): T | undefined {
+  let field = useField<T>(fieldName);
+  let value = useSignalValue(field.data);
+  return value || defaultValue;
+}
+
+export function useFieldTouched(fieldName: string): boolean {
+  let field = useField(fieldName);
+  let value = useSignalValue(field.touched);
+  return value;
+}
+
+export function useFieldErrors(fieldName: string): ValidationError[] {
+  let field = useField(fieldName);
+  let value = useSignalValue(field.errors);
+  return value;
 }

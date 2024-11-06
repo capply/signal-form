@@ -4,7 +4,7 @@
 
 When building forms with React, we want to have great performance, while also making it easy to build dynamic forms which react to user input and adapt to changes. These goals are seemingly at odds with each other. ReactHookForms and its derivatives, such as RemixValidatedForm tried to solve the performance problem by not storing the current form state in React state, instead opting for a DOM-based approach, where form components are generally uncontrolled. This works great for cases where forms are mostly static, but it become quite complicated when forms are dynamic.
 
-With Signals, powered by the fantastic [@preact/signals-react][] implementation, we can have our cake and eat it too! With the power of signals, we can have blazing fast forms with surgical precision rerenders, combined with all state being easily accessible and all form fields being controlled. This finally allows us to build forms that are both fast in terms of render performance and so powerful that we can react to any user input.
+With Signals, powered by the fantastic [@preact/signals][] implementation, we can have our cake and eat it too! With the power of signals, we can have blazing fast forms with surgical precision rerenders, combined with all state being easily accessible and all form fields being controlled. This finally allows us to build forms that are both fast in terms of render performance and so powerful that we can react to any user input. But you don't need to know anything about signals to use SignalForm, you just get great performance for free!
 
 SignalForm works great with Remix applications but can also be used on its own in any React application.
 
@@ -45,8 +45,7 @@ As you can see, SignalForm ships with some basic components for form elements. T
 
 ## Adding a schema
 
-Forms can be automatically validated by defining a schema using [yup][]. Unlike
-with remix-validated-form, the schema is optional.
+Forms can be automatically validated by defining a schema using [yup][]. The schema is optional.
 
 ```tsx
 import { Form, Input, CheckBoxInput, schema } from "signal-form";
@@ -264,11 +263,11 @@ type TextFieldProps = {
 }
 
 export function TextField({ name, label }: TextFieldProps): JSX.Element {
-  let fieldId = useId();
+  let field = useField(name);
   return (
     <p>
-      <label htmlFor={fieldId}>{label}</label>
-      <Input name={name} id={fieldId}>
+      <label htmlFor={field.id}>{label}</label>
+      <Input name={name} id={field.id}>
       <FieldErrors name={name}>
     </p>
   );
@@ -277,25 +276,68 @@ export function TextField({ name, label }: TextFieldProps): JSX.Element {
 
 But to understand the internals of SignalForm a bit better, let's look at how we
 could build a simplified version of the same field component using the
-`useField` hook:
+`useField`, `useFieldData`, and `useFieldErrors` hooks:
 
 ```tsx
 import { useField } from "signal-form";
 import { useId } from "react";
 
-type TextFieldProps = {
-  name: string;
-  label: string;
-};
+export function TextField({ name, label }: TextFieldProps): JSX.Element {
+  let field = useField(name);
+  let value = useFieldData<string>(name, "");
+  let errors = useFieldErrors(name);
+  return (
+    <p>
+      <label htmlFor={field.id}>{label}</label>
+      <input
+        id={field.id}
+        name={field.name}
+        value={value}
+        onChange={(e) => {
+          field.setData(e.target.value);
+        }}
+      />
+      {errors.map((error, index) => (
+        <p key={index}>{error.message}</p>;
+      ))}
+    </p>
+  );
+}
+```
+
+Let's unpack this a bit. The `useField` hook returns an object which contains
+meta information about the field, such as the name. You can call `setData` on
+this object, to write values to the field. Then we have specific hooks for
+accessing the field value and errors. These are optimized to only rerender if
+the field value or errors of this specific field change.
+
+## Using signals
+
+The object returned by `useField` also gives you access to the underlying
+signals for more advanced use cases. But note that if you want to use the values
+of these signals in your components, you need to ensure that your component
+tracks signal usage.
+
+The easiest way of achieving this is to use the `useSignals` hook from
+`@preact/signals-react`, but this approach has some downsides, since this
+library patches React in tricky ways and notably does NOT work with Remix and
+Next.js.
+
+```tsx
+import { useSignals } from "@preact/signals-react";
+import { useField } from "signal-form";
+import { useId } from "react";
 
 export function TextField({ name, label }: TextFieldProps): JSX.Element {
+  useSignals();
   let field = useField(name);
   return (
     <p>
-      <label htmlFor={fieldId}>{label}</label>
+      <label htmlFor={field.id}>{label}</label>
       <input
+        id={field.id}
         name={field.name}
-        value={field.data.value}
+        value={field.data.value || ""}
         onChange={(e) => {
           field.setData(e.target.value);
         }}
@@ -308,15 +350,38 @@ export function TextField({ name, label }: TextFieldProps): JSX.Element {
 }
 ```
 
-Let's unpack this a bit. The `useField` hook returns an object which allows you
-to both read and write data, as well as get access to the error messages of the
-field, if it has a schema.
+Another approach is to use the `signals-react-safe` library. This is what
+SignalForm does internally, and what we recommend to you as well. It is a bit
+more verbose, but the result is the same, and there is no patching of react
+internals going on. This approach works well in Remix and Next.js applications.
 
-Both `data` and `errors` are signals. If you don't know what a signal is,
-please review [this excellent blog post][blog] by the Preact team. To access the value
-of these signals we need to access the `.value` property on them, this also
-subscribes our `TextField` component to any changes to these signals, and it
-will rerender if their values change.
+```tsx
+import { useSignalValue } from "signals-react-safe";
+import { useField } from "signal-form";
+import { useId } from "react";
+
+export function TextField({ name, label }: TextFieldProps): JSX.Element {
+  let field = useField(name);
+  let data = useSignalValue(field.data);
+  let errors = useSignalValue(field.errors);
+  return (
+    <p>
+      <label htmlFor={field.id}>{label}</label>
+      <input
+        id={field.id}
+        name={field.name}
+        value={data || ""}
+        onChange={(e) => {
+          field.setData(e.target.value);
+        }}
+      />
+      {errors.map((error, index) => (
+        <p key={index}>{error.message}</p>;
+      ))}
+    </p>
+  );
+}
+```
 
 ## Form context
 
@@ -330,20 +395,28 @@ context. Let's look at accessing the form context directly:
 import { useFormContext } from "signal-form";
 
 export function FormData(): JSX.Element {
-  let context = useFormContext(name);
-  return <pre>{JSON.stringify(context.data.value, null, 2)}</pre>;
+  let data = useFormContextData(name);
+  return <pre>{JSON.stringify(data, null, 2)}</pre>;
 }
 ```
 
 This simple component will print out all data that is stored in the form.
 
-Since the `data` attribute of the form context is a signal, accessing `.value`
-on it both gets the current form data, but also subscribes the component to
-rerender if any of the data changes.
+We could also implement this using signals like so:
 
-## Dynamic forms
+```tsx
+import { useFormContext } from "signal-form";
+import { useSignalValue } from "signals-react-safe";
 
-Let's look at how we can use the form context to combine the first and last name to dynamically print the full name:
+export function FormData(): JSX.Element {
+  let context = useFormContext(name);
+  let data = useSignalValue(context.data);
+  return <pre>{JSON.stringify(data, null, 2)}</pre>;
+}
+```
+
+Let's look at how we can use the form context to combine the first and last name
+to dynamically print the full name:
 
 ```tsx
 import { Form, useFormContext } from "signal-form";
@@ -382,7 +455,7 @@ can use the power of signals to improve the render performance of this component
 a lot!
 
 ```tsx
-import { useComputed } from "@preact/signals-react";
+import { useComputed } from "signals-react-safe";
 
 function FullName(): JSX.Element {
   let context = useFormContext();
@@ -409,13 +482,13 @@ If we used form context here, we would have to reach into the `author` object to
 make this work:
 
 ```tsx
-import { Form, useFormContext } from "signal-form";
+import { Form, useFormContextData } from "signal-form";
 import { TextField } from "./text-field" // our text field implementation from earlier
 
 function FullName(): JSX.Element {
-  let context = useFormContext();
+  let data = useFormContextData();
 
-  let { firstName, lastName = } = context.data.value?.author;
+  let { firstName, lastName = } = data?.author || {};
   let fullName = [firstName, lastName].filter(Boolean).join(" ");
 
   return <p>Full name: {fullName}</p>;
@@ -437,29 +510,28 @@ export function UserForm(): JSX.Element {
 This is a bit inconvenient, since the `FullName` component needs to be aware of
 the fact that it's a child of a `FieldsFor` component.
 
-This is where the `useFieldsContext` hook comes in. It works similarly to
-`useFormContext` but gives us the current context instead:
+This is where the `useFieldsContext` and `useFieldsContextData` hooks come in.
+They work similarly to `useFormContext` and `useFormContextData` but give us the
+current context instead:
 
 ```tsx
-import { Form, useFieldsContext } from "signal-form";
-import { TextField } from "./text-field" // our text field implementation from earlier
+import { Form, useFieldsContextData } from "signal-form";
+import { TextField } from "./text-field"; // our text field implementation from earlier
 
 function FullName(): JSX.Element {
-    let context = useFieldsContext();
+  let { firstName, lastName } = useFieldsContextData();
+  let fullName = [firstName, lastName].filter(Boolean).join(" ");
 
-    let { firstName, lastName = } = context.data.value;
-    let fullName = [firstName, lastName].filter(Boolean).join(" ");
-
-    return <p>Full name: {fullName}</p>;
+  return <p>Full name: {fullName}</p>;
 }
 
 export function UserForm(): JSX.Element {
   return (
     <Form>
       <FieldsFor name="author">
-        <TextField name="firstName" label="First name"/>
-        <TextField name="lastName" label="Last name"/>
-        <FullName/>
+        <TextField name="firstName" label="First name" />
+        <TextField name="lastName" label="Last name" />
+        <FullName />
       </FieldsFor>
     </Form>
   );
@@ -535,5 +607,5 @@ export function action({ request }) {
 
 [yup]: https://github.com/jquense/yup
 [zod]: https://zod.dev
-[@preact/signals-react]: https://github.com/preactjs/signals
+[@preact/signals]: https://github.com/preactjs/signals
 [blog]: https://preactjs.com/blog/introducing-signals/
