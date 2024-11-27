@@ -11,10 +11,15 @@ export type InputProps = Omit<
 > & {
   name: string;
   value?: string | ReadonlySignal<string>;
+  onAfterChange?: ChangeEventHandler<HTMLInputElement>;
+  filter?: (value: string) => string;
 };
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ name, value, onChange, ...props }, forwardedRef) => {
+  (
+    { name, value, onChange, onAfterChange, filter, ...props },
+    forwardedRef
+  ) => {
     let field = useField<string>(name);
     let ref = useForwardedRef(forwardedRef);
 
@@ -37,10 +42,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     let onChangeHandler: ChangeEventHandler<HTMLInputElement> = useCallback(
       (e) => {
         onChange?.(e);
-        batch(() => {
-          field.setData(e.target.value);
-          field.setTouched();
-        });
+        if (!e.isDefaultPrevented()) {
+          batch(() => {
+            field.setData(filter ? filter(e.target.value) : e.target.value);
+            field.setTouched();
+          });
+        }
+        onAfterChange?.(e);
       },
       []
     );

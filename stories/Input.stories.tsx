@@ -127,3 +127,18 @@ export const Reactive: Story = {
     );
   },
 };
+
+export const Filtered: Story = {
+  render() {
+    return (
+      <Form>
+        <p>
+          <label>
+            Code:{" "}
+            <Input name="name" filter={(v) => v.toUpperCase().slice(0, 6)} />
+          </label>
+        </p>
+      </Form>
+    );
+  },
+};
