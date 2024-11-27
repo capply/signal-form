@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.7.1
+
+### Patch Changes
+
+- bb2330c: Improve change event handling and add filter property
+
 ## 0.7.0
 
 ### Minor Changes
