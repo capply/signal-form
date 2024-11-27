@@ -9,10 +9,11 @@ export type CheckBoxInputProps = Omit<
   "type"
 > & {
   name: string;
+  onAfterChange?: ChangeEventHandler<HTMLInputElement>;
 };
 
 export const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
-  ({ name, onChange, ...props }, forwardedRef) => {
+  ({ name, onChange, onAfterChange, ...props }, forwardedRef) => {
     let field = useField(name);
     let value = useFieldData<boolean>(name, false);
     let ref = useForwardedRef(forwardedRef);
@@ -26,10 +27,13 @@ export const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
     let onChangeHandler: ChangeEventHandler<HTMLInputElement> = useCallback(
       (e) => {
         onChange?.(e);
-        batch(() => {
-          field.setData(e.target.checked);
-          field.setTouched();
-        });
+        if (!e.isDefaultPrevented()) {
+          batch(() => {
+            field.setData(e.target.checked);
+            field.setTouched();
+          });
+        }
+        onAfterChange?.(e);
       },
       []
     );

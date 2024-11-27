@@ -11,10 +11,11 @@ export type TextAreaProps = Omit<
 > & {
   name: string;
   value?: string | ReadonlySignal<string>;
+  onAfterChange?: ChangeEventHandler<HTMLTextAreaElement>;
 };
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ name, value, onChange, ...props }, forwardedRef) => {
+  ({ name, value, onChange, onAfterChange, ...props }, forwardedRef) => {
     let field = useField<string>(name);
     let ref = useForwardedRef(forwardedRef);
 
@@ -37,10 +38,13 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     let onChangeHandler: ChangeEventHandler<HTMLTextAreaElement> = useCallback(
       (e) => {
         onChange?.(e);
-        batch(() => {
-          field.setData(e.target.value);
-          field.setTouched();
-        });
+        if (!e.isDefaultPrevented()) {
+          batch(() => {
+            field.setData(e.target.value);
+            field.setTouched();
+          });
+        }
+        onAfterChange?.(e);
       },
       []
     );

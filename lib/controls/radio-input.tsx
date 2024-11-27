@@ -10,10 +10,11 @@ export type RadioInputProps = Omit<
 > & {
   name: string;
   value: string;
+  onAfterChange?: ChangeEventHandler<HTMLInputElement>;
 };
 
 export const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(
-  ({ name, value, onChange, ...props }, forwardedRef) => {
+  ({ name, value, onChange, onAfterChange, ...props }, forwardedRef) => {
     let field = useField<string>(name);
     let isChecked = useComputedValue(() => {
       return field.data.value?.toString() === value.toString();
@@ -30,10 +31,13 @@ export const RadioInput = forwardRef<HTMLInputElement, RadioInputProps>(
     let onChangeHandler: ChangeEventHandler<HTMLInputElement> = useCallback(
       (e) => {
         onChange?.(e);
-        batch(() => {
-          field.setData(value);
-          field.setTouched();
-        });
+        if (!e.isDefaultPrevented()) {
+          batch(() => {
+            field.setData(value);
+            field.setTouched();
+          });
+        }
+        onAfterChange?.(e);
       },
       []
     );

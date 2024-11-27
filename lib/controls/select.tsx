@@ -6,6 +6,7 @@ import { useForwardedRef } from "~/utils/use-forwarded-ref";
 
 export type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
   name: string;
+  onAfterChange?: ChangeEventHandler<HTMLSelectElement>;
 };
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
@@ -19,7 +20,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
 );
 
 export const SingleSelect = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ name, multiple, onChange, ...props }, forwardedRef) => {
+  ({ name, multiple, onChange, onAfterChange, ...props }, forwardedRef) => {
     let field = useField(name);
     let value = useFieldData<string>(name, "");
     let ref = useForwardedRef(forwardedRef);
@@ -33,10 +34,13 @@ export const SingleSelect = forwardRef<HTMLSelectElement, SelectProps>(
     let onChangeHandler: ChangeEventHandler<HTMLSelectElement> = useCallback(
       (e) => {
         onChange?.(e);
-        batch(() => {
-          field.setData(e.target.value);
-          field.setTouched();
-        });
+        if (!e.isDefaultPrevented()) {
+          batch(() => {
+            field.setData(e.target.value);
+            field.setTouched();
+          });
+        }
+        onAfterChange?.(e);
       },
       []
     );
@@ -55,7 +59,7 @@ export const SingleSelect = forwardRef<HTMLSelectElement, SelectProps>(
 );
 
 export const MultipleSelect = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ name, multiple, onChange, ...props }, forwardedRef) => {
+  ({ name, multiple, onChange, onAfterChange, ...props }, forwardedRef) => {
     let field = useField(name);
     let value = useFieldData<string[]>(name, []);
     let ref = useForwardedRef<HTMLSelectElement>(forwardedRef);
@@ -69,10 +73,13 @@ export const MultipleSelect = forwardRef<HTMLSelectElement, SelectProps>(
     let onChangeHandler: ChangeEventHandler<HTMLSelectElement> = useCallback(
       (e) => {
         onChange?.(e);
-        batch(() => {
-          field.setData(Array.from(e.target.selectedOptions, (o) => o.value));
-          field.setTouched();
-        });
+        if (!e.isDefaultPrevented()) {
+          batch(() => {
+            field.setData(Array.from(e.target.selectedOptions, (o) => o.value));
+            field.setTouched();
+          });
+        }
+        onAfterChange?.(e);
       },
       []
     );
