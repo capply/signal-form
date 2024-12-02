@@ -86,6 +86,9 @@ export function createFormContext<S extends AnyObjectSchema>({
     setTouched(name) {
       touched.value = { ...touched.value, [name]: true };
     },
+    setDidSubmit(value: boolean) {
+      didSubmit.value = value;
+    },
     setValue(name, value) {
       if (data.value[name] !== value) {
         data.value = { ...data.value, [name]: value };
