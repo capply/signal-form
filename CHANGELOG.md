@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.7.2
+
+### Patch Changes
+
+- e2fa983: Add set did submit function
+
 ## 0.7.1
 
 ### Patch Changes
