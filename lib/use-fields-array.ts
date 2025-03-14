@@ -18,7 +18,7 @@ export function useFieldsArray<T = any>(fieldName: string): FieldArray<T> {
     return {
       ...field,
       keys: computed(() =>
-        (field.data.value || []).map((row, index) => (row as any)?.id || index)
+        (field.data.value || []).map((row, index) => index.toString())
       ),
       push(value: T) {
         field.setData([...(field.data.value || []), value]);
