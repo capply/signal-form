@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.7.3
+
+### Patch Changes
+
+- 2e2dc41: Remove `id` spcecial case for field arrays
+
 ## 0.7.2
 
 ### Patch Changes
