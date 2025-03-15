@@ -1,5 +1,11 @@
 # signal-form
 
+## 0.7.4
+
+### Patch Changes
+
+- 01e3905: Rethrow errors during validation if they are not validation errors
+
 ## 0.7.3
 
 ### Patch Changes
