@@ -42,12 +42,16 @@ export function validateSync<T extends AnyObjectSchema>(
     });
     return { ok: true, input, status: "valid", data: validationResult };
   } catch (error: any) {
-    let newErrors = error.inner.map((e: any) => ({
-      path: e.path,
-      message: e.message,
-      type: e.type,
-    }));
-    return { ok: false, input, status: "error", errors: newErrors };
+    if (error.inner) {
+      let newErrors = error.inner.map((e: any) => ({
+        path: e.path,
+        message: e.message,
+        type: e.type,
+      }));
+      return { ok: false, input, status: "error", errors: newErrors };
+    } else {
+      throw error;
+    }
   }
 }
 
@@ -61,12 +65,16 @@ export async function validate<T extends AnyObjectSchema>(
     });
     return { ok: true, input, status: "valid", data: validationResult };
   } catch (error: any) {
-    let newErrors = error.inner.map((e: any) => ({
-      path: e.path,
-      message: e.message,
-      type: e.type,
-    }));
-    return { ok: false, input, status: "error", errors: newErrors };
+    if (error.inner) {
+      let newErrors = error.inner.map((e: any) => ({
+        path: e.path,
+        message: e.message,
+        type: e.type,
+      }));
+      return { ok: false, input, status: "error", errors: newErrors };
+    } else {
+      throw error;
+    }
   }
 }
 
